@@ -1,0 +1,13 @@
+/* Element Plus Message 组件 z-index 覆盖 */
+/* 确保消息提示始终显示在弹窗之上 */
+.el-message {
+  z-index: 999999 !important;
+}
+
+.el-message-box {
+  z-index: 999999 !important;
+}
+
+.el-notification {
+  z-index: 999999 !important;
+}

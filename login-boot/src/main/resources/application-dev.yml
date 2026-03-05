@@ -1,0 +1,23 @@
+spring:
+  # 数据源配置 (注释掉，使用主配置文件中的SQLite配置)
+  # datasource:
+  #   druid:
+  #     url: jdbc:postgresql://localhost:5432/login_db
+  #     username: postgres
+  #     password: postgres
+
+  # Redis配置 (注释掉，使用内存存储替代)
+  # redis:
+  #   host: localhost
+  #   port: 6379
+  #   password:
+
+  # Nacos配置 (注释掉，简化部署)
+  # cloud:
+  #   nacos:
+  #     discovery:
+  #       enabled: false
+
+logging:
+  level:
+    com.demo.login: debug

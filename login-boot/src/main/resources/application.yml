@@ -1,0 +1,74 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: login-boot
+  profiles:
+    active: dev
+
+  # 数据源配置 - 使用SQLite
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:./data/login.db
+    # SQLite不需要用户名密码
+
+  # 数据库初始化配置
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+      encoding: utf-8
+
+  # Redis配置 (注释掉，使用内存存储替代)
+  # redis:
+  #   host: localhost
+  #   port: 6379
+  #   password:
+  #   database: 0
+  #   timeout: 3000
+  #   lettuce:
+  #     pool:
+  #       max-active: 8
+  #       max-wait: -1
+  #       max-idle: 8
+  #       min-idle: 0
+
+  # Nacos配置 (注释掉，简化部署)
+  # cloud:
+  #   nacos:
+  #     discovery:
+  #       server-addr: localhost:8848
+  #       enabled: false
+
+# MyBatis-Plus配置
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.demo.login.entity
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    use-generated-keys: false
+  global-config:
+    db-config:
+      id-type: assign_id
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+# JWT配置
+jwt:
+  secret: login-demo-secret-key-2024
+  expire: 7200
+  header: Authorization
+
+# 日志配置
+logging:
+  level:
+    com.demo.login: debug
+    com.demo.login.mapper: debug
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{50} - %msg%n'
