@@ -176,7 +176,7 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="500px"
+      width="650px"
       @close="handleDialogClose"
       class="role-dialog"
       :close-on-click-modal="false"
@@ -1123,7 +1123,7 @@ onMounted(() => {
 }
 
 .form-col-small {
-  flex: 0 0 180px;
+  flex: 0 0 280px;
   margin-bottom: 0 !important;
 }
 
@@ -1151,6 +1151,7 @@ onMounted(() => {
   box-shadow: 0 0 0 1px #d1d5db inset;
   transition: all 0.2s ease;
   background: #ffffff;
+  padding: 8px 12px;
 }
 
 .role-form :deep(.el-input__wrapper:hover) {
@@ -1164,6 +1165,7 @@ onMounted(() => {
 .role-form :deep(.el-input__inner) {
   font-size: 14px;
   color: #111827;
+  line-height: 1.5;
 }
 
 .role-form :deep(.el-input__inner::placeholder) {
@@ -1178,6 +1180,7 @@ onMounted(() => {
   line-height: 1.6;
   background: #ffffff;
   resize: none;
+  padding: 8px 12px;
 }
 
 .role-form :deep(.el-textarea__inner:hover) {
