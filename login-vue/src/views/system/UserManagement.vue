@@ -194,7 +194,6 @@
               v-model="formData.username"
               placeholder="请输入用户名（3-50字符）"
               :disabled="isEdit"
-              size="large"
             />
           </el-form-item>
           <el-form-item label="密码" prop="password" :required="!isEdit" class="form-col-small">
@@ -203,7 +202,6 @@
               type="password"
               placeholder="请输入密码（6-20字符）"
               show-password
-              size="large"
             />
             <div v-if="isEdit" class="form-tip">
               <el-icon><InfoFilled /></el-icon>
@@ -214,7 +212,6 @@
             <el-input
               v-model="formData.nickname"
               placeholder="请输入昵称"
-              size="large"
             />
           </el-form-item>
         </div>
@@ -224,7 +221,6 @@
             <el-input
               v-model="formData.email"
               placeholder="请输入邮箱地址"
-              size="large"
             />
           </el-form-item>
           <el-form-item label="手机号" prop="phone" class="form-col-small">
@@ -233,11 +229,10 @@
               placeholder="请输入手机号"
               maxlength="11"
               @input="handleFormPhoneInput"
-              size="large"
             />
           </el-form-item>
           <el-form-item label="状态" prop="status" class="form-col-small">
-            <el-radio-group v-model="formData.status" class="status-radio" size="large">
+            <el-radio-group v-model="formData.status" class="status-radio">
               <el-radio :label="1" border>正常</el-radio>
               <el-radio :label="0" border>禁用</el-radio>
             </el-radio-group>
@@ -259,12 +254,11 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="dialogVisible = false" size="large" class="cancel-btn">取消</el-button>
+          <el-button @click="dialogVisible = false" class="cancel-btn">取消</el-button>
           <el-button
             type="primary"
             @click="handleSubmit"
             :loading="submitLoading"
-            size="large"
             class="submit-btn"
           >
             {{ isEdit ? '保存修改' : '立即创建' }}

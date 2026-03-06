@@ -193,21 +193,19 @@
             <el-input
               v-model="roleForm.roleName"
               placeholder="请输入角色名称"
-              size="large"
             />
           </el-form-item>
           <el-form-item label="角色标识" prop="roleKey" class="form-col-small">
             <el-input
               v-model="roleForm.roleKey"
               placeholder="请输入角色标识，如：admin"
-              size="large"
             />
           </el-form-item>
         </div>
 
         <div class="form-row">
           <el-form-item label="状态" prop="status" class="form-col-small">
-            <el-radio-group v-model="roleForm.status" class="status-radio" size="large">
+            <el-radio-group v-model="roleForm.status" class="status-radio">
               <el-radio :label="1" border>正常</el-radio>
               <el-radio :label="0" border>禁用</el-radio>
             </el-radio-group>
@@ -218,7 +216,6 @@
               :min="0"
               class="sort-input"
               controls-position="right"
-              size="large"
             />
           </el-form-item>
         </div>
@@ -238,12 +235,11 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="dialogVisible = false" size="large" class="cancel-btn">取消</el-button>
+          <el-button @click="dialogVisible = false" class="cancel-btn">取消</el-button>
           <el-button
             type="primary"
             @click="handleSubmit"
             :loading="submitLoading"
-            size="large"
             class="submit-btn"
           >
             {{ editingRoleId ? '保存修改' : '立即创建' }}
