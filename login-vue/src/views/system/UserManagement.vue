@@ -176,7 +176,7 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="900px"
+      width="850px"
       @close="handleDialogClose"
       class="user-dialog"
       :close-on-click-modal="false"
@@ -189,7 +189,7 @@
         label-position="top"
       >
         <div class="form-row">
-          <el-form-item label="用户名" prop="username" class="form-col">
+          <el-form-item label="用户名" prop="username" class="form-col-small">
             <el-input
               v-model="formData.username"
               placeholder="请输入用户名（3-50字符）"
@@ -197,7 +197,7 @@
               size="large"
             />
           </el-form-item>
-          <el-form-item label="密码" prop="password" :required="!isEdit" class="form-col">
+          <el-form-item label="密码" prop="password" :required="!isEdit" class="form-col-small">
             <el-input
               v-model="formData.password"
               type="password"
@@ -210,7 +210,7 @@
               <span>留空则不修改密码</span>
             </div>
           </el-form-item>
-          <el-form-item label="昵称" prop="nickname" class="form-col">
+          <el-form-item label="昵称" prop="nickname" class="form-col-small">
             <el-input
               v-model="formData.nickname"
               placeholder="请输入昵称"
@@ -220,14 +220,14 @@
         </div>
 
         <div class="form-row">
-          <el-form-item label="邮箱" prop="email" class="form-col">
+          <el-form-item label="邮箱" prop="email" class="form-col-small">
             <el-input
               v-model="formData.email"
               placeholder="请输入邮箱地址"
               size="large"
             />
           </el-form-item>
-          <el-form-item label="手机号" prop="phone" class="form-col">
+          <el-form-item label="手机号" prop="phone" class="form-col-small">
             <el-input
               v-model="formData.phone"
               placeholder="请输入手机号"
@@ -236,7 +236,7 @@
               size="large"
             />
           </el-form-item>
-          <el-form-item label="状态" prop="status" class="form-col">
+          <el-form-item label="状态" prop="status" class="form-col-small">
             <el-radio-group v-model="formData.status" class="status-radio" size="large">
               <el-radio :label="1" border>正常</el-radio>
               <el-radio :label="0" border>禁用</el-radio>
@@ -1150,7 +1150,7 @@ onMounted(() => {
 /* 表单行布局 */
 .form-row {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   margin-bottom: 20px;
 }
 
@@ -1160,6 +1160,11 @@ onMounted(() => {
 
 .form-col {
   flex: 1;
+  margin-bottom: 0 !important;
+}
+
+.form-col-small {
+  flex: 0 0 250px;
   margin-bottom: 0 !important;
 }
 

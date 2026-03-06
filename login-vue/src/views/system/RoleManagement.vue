@@ -176,7 +176,7 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="800px"
+      width="650px"
       @close="handleDialogClose"
       class="role-dialog"
       :close-on-click-modal="false"
@@ -189,14 +189,14 @@
         label-position="top"
       >
         <div class="form-row">
-          <el-form-item label="角色名称" prop="roleName" class="form-col">
+          <el-form-item label="角色名称" prop="roleName" class="form-col-small">
             <el-input
               v-model="roleForm.roleName"
               placeholder="请输入角色名称"
               size="large"
             />
           </el-form-item>
-          <el-form-item label="角色标识" prop="roleKey" class="form-col">
+          <el-form-item label="角色标识" prop="roleKey" class="form-col-small">
             <el-input
               v-model="roleForm.roleKey"
               placeholder="请输入角色标识，如：admin"
@@ -206,13 +206,13 @@
         </div>
 
         <div class="form-row">
-          <el-form-item label="状态" prop="status" class="form-col">
+          <el-form-item label="状态" prop="status" class="form-col-small">
             <el-radio-group v-model="roleForm.status" class="status-radio" size="large">
               <el-radio :label="1" border>正常</el-radio>
               <el-radio :label="0" border>禁用</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="排序" prop="sort" class="form-col">
+          <el-form-item label="排序" prop="sort" class="form-col-small">
             <el-input-number
               v-model="roleForm.sort"
               :min="0"
@@ -1109,7 +1109,7 @@ onMounted(() => {
 /* 表单行布局 */
 .form-row {
   display: flex;
-  gap: 20px;
+  gap: 16px;
   margin-bottom: 20px;
 }
 
@@ -1119,6 +1119,11 @@ onMounted(() => {
 
 .form-col {
   flex: 1;
+  margin-bottom: 0 !important;
+}
+
+.form-col-small {
+  flex: 0 0 280px;
   margin-bottom: 0 !important;
 }
 
