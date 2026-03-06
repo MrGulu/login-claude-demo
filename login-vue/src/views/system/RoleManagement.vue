@@ -111,38 +111,45 @@
         <el-table-column prop="sort" label="排序" width="80" align="center" />
         <el-table-column prop="remark" label="备注" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" width="300" fixed="right" align="center">
+        <el-table-column label="操作" width="80" fixed="right" align="center">
           <template #default="{ row }">
             <div class="action-buttons">
-              <el-button v-permission="'system:role:edit'" 
-                type="primary"
-                size="small"
-                @click="handleEdit(row)"
-                :disabled="row.isSystem === 1"
-                class="action-btn"
-              >
-                <el-icon><Edit /></el-icon>
-                编辑
-              </el-button>
-              <el-button v-permission="'system:role:assign'" 
-                type="warning"
-                size="small"
-                @click="handleAssignMenu(row)"
-                class="action-btn"
-              >
-                <el-icon><Setting /></el-icon>
-                权限
-              </el-button>
-              <el-button v-permission="'system:role:delete'" 
-                type="danger"
-                size="small"
-                @click="handleDelete(row)"
-                :disabled="row.isSystem === 1"
-                class="action-btn"
-              >
-                <el-icon><Delete /></el-icon>
-                删除
-              </el-button>
+              <el-dropdown trigger="click" @command="(cmd) => handleDropdownCommand(cmd, row)" placement="bottom-end">
+                <el-button size="small" class="action-menu-btn" circle>
+                  <el-icon class="action-icon"><Operation /></el-icon>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu class="action-dropdown">
+                    <el-dropdown-item
+                      v-if="hasPermission('system:role:edit')"
+                      :disabled="row.isSystem === 1"
+                      command="edit"
+                      class="dropdown-item-custom"
+                    >
+                      <el-icon class="item-icon primary-icon"><Edit /></el-icon>
+                      <span class="item-text">编辑角色</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      v-if="hasPermission('system:role:assign')"
+                      command="assign"
+                      class="dropdown-item-custom"
+                    >
+                      <el-icon class="item-icon warning-icon"><Setting /></el-icon>
+                      <span class="item-text">分配权限</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      v-if="hasPermission('system:role:delete')"
+                      :disabled="row.isSystem === 1"
+                      command="delete"
+                      divided
+                      class="dropdown-item-custom danger-item"
+                    >
+                      <el-icon class="item-icon danger-icon"><Delete /></el-icon>
+                      <span class="item-text">删除角色</span>
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </div>
           </template>
         </el-table-column>
@@ -269,7 +276,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search, UserFilled, Edit, Delete, Setting } from '@element-plus/icons-vue'
+import { Plus, Search, UserFilled, Edit, Delete, Setting, Operation } from '@element-plus/icons-vue'
 import {
   getRoleList,
   createRole,
@@ -337,6 +344,12 @@ const currentRoleId = ref(null)
 const menuSubmitting = ref(false)
 const isExpanded = ref(true)
 const isCheckedAll = ref(false)
+
+// 权限检查函数
+const hasPermission = (permission) => {
+  const userPerms = JSON.parse(localStorage.getItem('userPerms') || '[]')
+  return userPerms.includes(permission)
+}
 
 // 加载角色列表
 const loadRoleList = async () => {
@@ -595,6 +608,17 @@ const handleCheckAll = () => {
   }
 }
 
+// 处理下拉菜单命令
+const handleDropdownCommand = (command, row) => {
+  if (command === 'edit') {
+    handleEdit(row)
+  } else if (command === 'assign') {
+    handleAssignMenu(row)
+  } else if (command === 'delete') {
+    handleDelete(row)
+  }
+}
+
 onMounted(() => {
   loadRoleList()
 })
@@ -847,78 +871,152 @@ onMounted(() => {
 
 .action-buttons {
   display: flex;
-  gap: 6px;
   justify-content: center;
   align-items: center;
-  flex-wrap: nowrap;
 }
 
-.action-btn {
-  font-weight: 500;
-  font-size: 12px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  display: inline-flex;
+.action-menu-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #dc2626 0%, #f59e0b 100%);
+  transition: all 0.3s ease;
+  box-shadow: none;
+}
+
+.action-menu-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+}
+
+.action-menu-btn:active {
+  transform: translateY(0);
+}
+
+.action-icon {
+  font-size: 17px;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+/* 下拉菜单样式 */
+.action-dropdown {
+  min-width: 160px;
+  padding: 8px 0;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f1f3f5;
+  background: #ffffff;
+  animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown-item-custom {
+  display: flex;
   align-items: center;
-  gap: 3px;
-  white-space: nowrap;
-  border: none;
-  box-shadow: none !important;
+  gap: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
-.action-btn:hover {
-  box-shadow: none !important;
+.dropdown-item-custom::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: transparent;
+  transition: all 0.3s ease;
 }
 
-.action-btn.el-button--primary {
+.dropdown-item-custom:hover {
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%);
+  color: #1f2937;
+  padding-left: 20px;
+}
+
+.dropdown-item-custom:hover::before {
   background: #3b82f6;
-  color: white;
-  border: none;
 }
 
-.action-btn.el-button--primary:hover {
-  background: #2563eb;
-  border: none;
-  transform: translateY(-1px);
+.dropdown-item-custom.danger-item:hover {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.02) 100%);
+  color: #dc2626;
 }
 
-.action-btn.el-button--primary:disabled {
-  background: #9ca3af;
-  color: #d1d5db;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.action-btn.el-button--warning {
-  background: #f59e0b;
-  color: white;
-  border: none;
-}
-
-.action-btn.el-button--warning:hover {
-  background: #d97706;
-  border: none;
-  transform: translateY(-1px);
-}
-
-.action-btn.el-button--danger {
+.dropdown-item-custom.danger-item:hover::before {
   background: #ef4444;
-  color: white;
-  border: none;
 }
 
-.action-btn.el-button--danger:hover {
-  background: #dc2626;
-  border: none;
-  transform: translateY(-1px);
-}
-
-.action-btn.el-button--danger:disabled {
-  background: #9ca3af;
-  color: #d1d5db;
+.dropdown-item-custom.is-disabled {
+  opacity: 0.4;
   cursor: not-allowed;
+}
+
+.dropdown-item-custom.is-disabled:hover {
+  background: transparent;
+  padding-left: 16px;
+}
+
+.dropdown-item-custom.is-disabled:hover::before {
+  background: transparent;
+}
+
+.item-icon {
+  font-size: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.primary-icon {
+  color: #3b82f6;
+}
+
+.warning-icon {
+  color: #f59e0b;
+}
+
+.danger-icon {
+  color: #ef4444;
+}
+
+.dropdown-item-custom:hover .item-icon {
+  transform: scale(1.15) translateX(2px);
+}
+
+.dropdown-item-custom.is-disabled:hover .item-icon {
   transform: none;
+}
+
+.item-text {
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+/* 分割线样式 */
+:deep(.el-dropdown-menu__item--divided) {
+  margin-top: 8px;
+  border-top: 1px solid #f1f3f5;
+  padding-top: 18px;
 }
 
 /* 分页器 */

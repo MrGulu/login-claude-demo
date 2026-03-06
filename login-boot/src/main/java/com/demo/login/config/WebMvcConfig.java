@@ -28,15 +28,15 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(jwtInterceptor)
                 // 拦截所有需要认证的接口
                 .addPathPatterns("/api/**")
-                // 排除登录接口
-                .excludePathPatterns("/api/auth/login")
+                // 排除登录接口和验证码接口
+                .excludePathPatterns("/api/auth/login", "/api/auth/captcha")
                 // 排除静态资源
                 .excludePathPatterns("/static/**", "/public/**");
 
         // 权限验证拦截器（在 JWT 拦截器之后执行）
         registry.addInterceptor(permissionInterceptor)
                 .addPathPatterns("/api/**")
-                .excludePathPatterns("/api/auth/login")
+                .excludePathPatterns("/api/auth/login", "/api/auth/captcha")
                 .excludePathPatterns("/static/**", "/public/**");
     }
 }

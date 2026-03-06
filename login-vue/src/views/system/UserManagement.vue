@@ -102,45 +102,54 @@
           </template>
         </el-table-column>
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" width="280" fixed="right" align="center">
+        <el-table-column label="操作" width="80" fixed="right" align="center">
           <template #default="{ row }">
             <div class="action-buttons">
-              <el-button v-permission="'system:user:edit'" 
-                type="primary"
-                size="small"
-                @click="handleEdit(row)"
-                class="action-btn"
-              >
-                <el-icon><Edit /></el-icon>
-                编辑
-              </el-button>
-              <el-button v-permission="'system:user:role'" :disabled="row.username === 'admin'" 
-                type="info"
-                size="small"
-                @click="handleAssignRole(row)"
-                class="action-btn"
-              >
-                <el-icon><UserFilled /></el-icon>
-                角色
-              </el-button>
-              <el-button v-permission="'system:user:status'" :disabled="row.username === 'admin'" 
-                :type="row.status === 1 ? 'warning' : 'success'"
-                size="small"
-                @click="handleStatusChange(row)"
-                class="action-btn"
-              >
-                <el-icon><Switch /></el-icon>
-                {{ row.status === 1 ? '禁用' : '启用' }}
-              </el-button>
-              <el-button v-permission="'system:user:delete'" :disabled="row.username === 'admin'" 
-                type="danger"
-                size="small"
-                @click="handleDelete(row)"
-                class="action-btn"
-              >
-                <el-icon><Delete /></el-icon>
-                删除
-              </el-button>
+              <el-dropdown trigger="click" @command="(cmd) => handleDropdownCommand(cmd, row)" placement="bottom-end">
+                <el-button size="small" class="action-menu-btn" circle>
+                  <el-icon class="action-icon"><Operation /></el-icon>
+                </el-button>
+                <template #dropdown>
+                  <el-dropdown-menu class="action-dropdown">
+                    <el-dropdown-item
+                      v-if="hasPermission('system:user:edit')"
+                      command="edit"
+                      class="dropdown-item-custom"
+                    >
+                      <el-icon class="item-icon primary-icon"><Edit /></el-icon>
+                      <span class="item-text">编辑用户</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      v-if="hasPermission('system:user:role')"
+                      :disabled="row.username === 'admin'"
+                      command="role"
+                      class="dropdown-item-custom"
+                    >
+                      <el-icon class="item-icon info-icon"><UserFilled /></el-icon>
+                      <span class="item-text">分配角色</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      v-if="hasPermission('system:user:status')"
+                      :disabled="row.username === 'admin'"
+                      command="status"
+                      class="dropdown-item-custom"
+                    >
+                      <el-icon class="item-icon warning-icon"><Switch /></el-icon>
+                      <span class="item-text">{{ row.status === 1 ? '禁用用户' : '启用用户' }}</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                      v-if="hasPermission('system:user:delete')"
+                      :disabled="row.username === 'admin'"
+                      command="delete"
+                      divided
+                      class="dropdown-item-custom danger-item"
+                    >
+                      <el-icon class="item-icon danger-icon"><Delete /></el-icon>
+                      <span class="item-text">删除用户</span>
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </div>
           </template>
         </el-table-column>
@@ -291,7 +300,7 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search, User, UserFilled, Edit, Delete, Switch, Phone, InfoFilled } from '@element-plus/icons-vue'
+import { Plus, Search, User, UserFilled, Edit, Delete, Switch, Phone, InfoFilled, MoreFilled, Operation } from '@element-plus/icons-vue'
 import { getUserList as getUserListApi, createUser, updateUser, deleteUser as deleteUserApi, updateUserStatus as updateUserStatusApi, getUserRoles, assignRoles } from '@/api/userManagement'
 import { getRoleList } from '@/api/role'
 
@@ -373,6 +382,12 @@ const roleList = ref([])
 const selectedRoles = ref([])
 const currentUserId = ref(null)
 const roleSubmitting = ref(false)
+
+// 权限检查函数
+const hasPermission = (permission) => {
+  const userPerms = JSON.parse(localStorage.getItem('userPerms') || '[]')
+  return userPerms.includes(permission)
+}
 
 // 获取用户列表
 const getUserList = async () => {
@@ -636,6 +651,19 @@ const handleRoleDialogClose = () => {
   currentUserId.value = null
 }
 
+// 处理下拉菜单命令
+const handleDropdownCommand = (command, row) => {
+  if (command === 'edit') {
+    handleEdit(row)
+  } else if (command === 'role') {
+    handleAssignRole(row)
+  } else if (command === 'status') {
+    handleStatusChange(row)
+  } else if (command === 'delete') {
+    handleDelete(row)
+  }
+}
+
 // 初始化
 onMounted(() => {
   getUserList()
@@ -889,88 +917,156 @@ onMounted(() => {
 
 .action-buttons {
   display: flex;
-  gap: 6px;
   justify-content: center;
   align-items: center;
-  flex-wrap: nowrap;
 }
 
-.action-btn {
-  font-weight: 500;
-  font-size: 12px;
-  padding: 5px 10px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-  display: inline-flex;
+.action-menu-btn {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #dc2626 0%, #f59e0b 100%);
+  transition: all 0.3s ease;
+  box-shadow: none;
+}
+
+.action-menu-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
+}
+
+.action-menu-btn:active {
+  transform: translateY(0);
+}
+
+.action-icon {
+  font-size: 17px;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+/* 下拉菜单样式 */
+.action-dropdown {
+  min-width: 160px;
+  padding: 8px 0;
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #f1f3f5;
+  background: #ffffff;
+  animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdown-item-custom {
+  display: flex;
   align-items: center;
-  gap: 3px;
-  white-space: nowrap;
-  border: none;
-  box-shadow: none !important;
+  gap: 10px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
 }
 
-.action-btn:hover {
-  box-shadow: none !important;
+.dropdown-item-custom::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: transparent;
+  transition: all 0.3s ease;
 }
 
-.action-btn.el-button--primary {
+.dropdown-item-custom:hover {
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%);
+  color: #1f2937;
+  padding-left: 20px;
+}
+
+.dropdown-item-custom:hover::before {
   background: #3b82f6;
-  color: white;
-  border: none;
 }
 
-.action-btn.el-button--primary:hover {
-  background: #2563eb;
-  border: none;
-  transform: translateY(-1px);
+.dropdown-item-custom.danger-item:hover {
+  background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.02) 100%);
+  color: #dc2626;
 }
 
-.action-btn.el-button--warning {
-  background: #f59e0b;
-  color: white;
-  border: none;
-}
-
-.action-btn.el-button--warning:hover {
-  background: #d97706;
-  border: none;
-  transform: translateY(-1px);
-}
-
-.action-btn.el-button--success {
-  background: #10b981;
-  color: white;
-  border: none;
-}
-
-.action-btn.el-button--success:hover {
-  background: #059669;
-  border: none;
-  transform: translateY(-1px);
-}
-
-.action-btn.el-button--danger {
+.dropdown-item-custom.danger-item:hover::before {
   background: #ef4444;
-  color: white;
-  border: none;
 }
 
-.action-btn.el-button--danger:hover {
-  background: #dc2626;
-  border: none;
-  transform: translateY(-1px);
+.dropdown-item-custom.is-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
-.action-btn.el-button--info {
-  background: #6366f1;
-  color: white;
-  border: none;
+.dropdown-item-custom.is-disabled:hover {
+  background: transparent;
+  padding-left: 16px;
 }
 
-.action-btn.el-button--info:hover {
-  background: #4f46e5;
-  border: none;
-  transform: translateY(-1px);
+.dropdown-item-custom.is-disabled:hover::before {
+  background: transparent;
+}
+
+.item-icon {
+  font-size: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+}
+
+.primary-icon {
+  color: #3b82f6;
+}
+
+.info-icon {
+  color: #6366f1;
+}
+
+.warning-icon {
+  color: #f59e0b;
+}
+
+.danger-icon {
+  color: #ef4444;
+}
+
+.dropdown-item-custom:hover .item-icon {
+  transform: scale(1.15) translateX(2px);
+}
+
+.dropdown-item-custom.is-disabled:hover .item-icon {
+  transform: none;
+}
+
+.item-text {
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+/* 分割线样式 */
+:deep(.el-dropdown-menu__item--divided) {
+  margin-top: 8px;
+  border-top: 1px solid #f1f3f5;
+  padding-top: 18px;
 }
 
 /* 分页器 */
