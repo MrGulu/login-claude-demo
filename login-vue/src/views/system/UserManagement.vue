@@ -176,7 +176,7 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="850px"
+      width="700px"
       @close="handleDialogClose"
       class="user-dialog"
       :close-on-click-modal="false"
@@ -1164,7 +1164,7 @@ onMounted(() => {
 }
 
 .form-col-small {
-  flex: 0 0 250px;
+  flex: 0 0 180px;
   margin-bottom: 0 !important;
 }
 
