@@ -11,6 +11,7 @@ import com.demo.login.entity.User;
 import com.demo.login.mapper.LoginLogMapper;
 import com.demo.login.mapper.UserMapper;
 import com.demo.login.service.IAuthService;
+import com.demo.login.service.IMenuService;
 import com.demo.login.vo.LoginVO;
 import com.demo.login.vo.UserInfoVO;
 import lombok.Data;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 // import java.util.concurrent.TimeUnit; // 注释掉，不再需要
@@ -43,6 +45,9 @@ public class AuthServiceImpl implements IAuthService {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private IMenuService menuService;
+
     // @Autowired // 注释掉Redis依赖
     // private StringRedisTemplate redisTemplate;
 
@@ -57,7 +62,7 @@ public class AuthServiceImpl implements IAuthService {
      */
     @Data
     public static class TokenInfo {
-        private String userId;
+        private Long userId;
         private long expireTime;
     }
 
@@ -96,16 +101,20 @@ public class AuthServiceImpl implements IAuthService {
         long expireTime = loginDTO.getRemember() != null && loginDTO.getRemember()
             ? TOKEN_EXPIRE * 7 : TOKEN_EXPIRE; // 记住我：14天，否则2小时
         TokenInfo tokenInfo = new TokenInfo();
-        tokenInfo.setUserId(user.getId().toString());
+        tokenInfo.setUserId(user.getId());
         tokenInfo.setExpireTime(System.currentTimeMillis() + expireTime * 1000);
         TOKEN_STORE.put(token, tokenInfo);
 
         // 记录登录日志
         saveLoginLog(user.getId(), loginDTO.getUsername(), 1, "登录成功");
 
+        // 获取用户权限
+        List<String> permissions = menuService.getUserPermissions(user.getId());
+
         // 构造返回数据
         LoginVO loginVO = new LoginVO();
         loginVO.setToken(token);
+        loginVO.setPermissions(permissions);
 
         UserInfoVO userInfoVO = new UserInfoVO();
         BeanUtil.copyProperties(user, userInfoVO);
@@ -146,10 +155,10 @@ public class AuthServiceImpl implements IAuthService {
         if (tokenInfo == null || tokenInfo.getExpireTime() < System.currentTimeMillis()) {
             throw new BusinessException(3003, "Token已过期");
         }
-        String userId = tokenInfo.getUserId();
+        Long userId = tokenInfo.getUserId();
 
         // 查询用户信息
-        User user = userMapper.selectById(Long.parseLong(userId));
+        User user = userMapper.selectById(userId);
         if (user == null) {
             throw new BusinessException(2001, "用户不存在");
         }
@@ -191,7 +200,7 @@ public class AuthServiceImpl implements IAuthService {
 
         // 存储新Token (替代Redis)
         TokenInfo tokenInfo = new TokenInfo();
-        tokenInfo.setUserId(userId.toString());
+        tokenInfo.setUserId(userId);
         tokenInfo.setExpireTime(System.currentTimeMillis() + TOKEN_EXPIRE * 1000);
         TOKEN_STORE.put(newToken, tokenInfo);
 

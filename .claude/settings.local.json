@@ -6,8 +6,7 @@
       "Write(*)",
       "Read(*)",
       "Glob(*)",
-      "Grep(*)",
-      "Skill(*)"
+      "Grep(*)"
     ]
   }
 }

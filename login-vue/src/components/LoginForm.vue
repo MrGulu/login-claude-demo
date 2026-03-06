@@ -102,6 +102,7 @@ const handleSubmit = async () => {
         // 保存token和用户信息
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('userInfo', JSON.stringify(response.data.userInfo))
+        localStorage.setItem('userPerms', JSON.stringify(response.data.permissions || []))
 
         // 刷新全局用户信息状态
         refreshUserInfo()

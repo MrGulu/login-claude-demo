@@ -59,4 +59,20 @@ public interface IUserManagementService {
      * @param status 状态：0-禁用，1-正常
      */
     void updateUserStatus(Long id, Integer status);
+
+    /**
+     * 获取用户的角色列表
+     *
+     * @param userId 用户ID
+     * @return 角色ID列表
+     */
+    java.util.List<Long> getUserRoles(Long userId);
+
+    /**
+     * 分配角色给用户（覆盖式更新）
+     *
+     * @param userId 用户ID
+     * @param roleIds 角色ID列表
+     */
+    void assignRoles(Long userId, java.util.List<Long> roleIds);
 }

@@ -8,11 +8,16 @@ import com.demo.login.common.utils.PasswordUtil;
 import com.demo.login.dto.CreateUserDTO;
 import com.demo.login.dto.UpdateUserDTO;
 import com.demo.login.dto.UserQueryDTO;
+import com.demo.login.entity.Role;
 import com.demo.login.entity.User;
+import com.demo.login.entity.UserRole;
+import com.demo.login.mapper.RoleMapper;
 import com.demo.login.mapper.UserMapper;
+import com.demo.login.mapper.UserRoleMapper;
 import com.demo.login.service.IUserManagementService;
 import com.demo.login.vo.PageResult;
 import com.demo.login.vo.UserVO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,11 +33,18 @@ import java.util.stream.Collectors;
  * @author Claude
  * @since 2024-03-04
  */
+@Slf4j
 @Service
 public class UserManagementServiceImpl implements IUserManagementService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private UserRoleMapper userRoleMapper;
+
+    @Autowired
+    private RoleMapper roleMapper;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -152,8 +164,33 @@ public class UserManagementServiceImpl implements IUserManagementService {
             throw new BusinessException("用户不存在");
         }
 
+        // 检查是否是 admin 用户（username = 'admin'）
+        if ("admin".equals(user.getUsername())) {
+            throw new BusinessException("不能删除系统管理员账户");
+        }
+
+        // 检查是否拥有 root 角色
+        List<Long> roleIds = userRoleMapper.selectList(
+                new LambdaQueryWrapper<UserRole>()
+                        .eq(UserRole::getUserId, id)
+        ).stream().map(UserRole::getRoleId).collect(Collectors.toList());
+
+        if (!roleIds.isEmpty()) {
+            List<Role> roles = roleMapper.selectBatchIds(roleIds);
+            boolean hasRootRole = roles.stream()
+                    .anyMatch(role -> "root".equals(role.getRoleKey()));
+            if (hasRootRole) {
+                throw new BusinessException("不能删除拥有超级管理员角色的用户");
+            }
+        }
+
         // 逻辑删除
         userMapper.deleteById(id);
+
+        // 删除用户角色关联
+        LambdaQueryWrapper<UserRole> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(UserRole::getUserId, id);
+        userRoleMapper.delete(wrapper);
     }
 
     @Override
@@ -165,9 +202,84 @@ public class UserManagementServiceImpl implements IUserManagementService {
             throw new BusinessException("用户不存在");
         }
 
+        // 检查是否是 admin 用户（username = 'admin'）
+        if ("admin".equals(user.getUsername())) {
+            throw new BusinessException("不能修改系统管理员账户状态");
+        }
+
+        // 检查是否拥有 root 角色
+        List<Long> roleIds = userRoleMapper.selectList(
+                new LambdaQueryWrapper<UserRole>()
+                        .eq(UserRole::getUserId, id)
+        ).stream().map(UserRole::getRoleId).collect(Collectors.toList());
+
+        if (!roleIds.isEmpty()) {
+            List<Role> roles = roleMapper.selectBatchIds(roleIds);
+            boolean hasRootRole = roles.stream()
+                    .anyMatch(role -> "root".equals(role.getRoleKey()));
+            if (hasRootRole) {
+                throw new BusinessException("不能修改拥有超级管理员角色的用户状态");
+            }
+        }
+
         // 更新状态
         user.setStatus(status);
         userMapper.updateById(user);
+    }
+
+    @Override
+    public List<Long> getUserRoles(Long userId) {
+        LambdaQueryWrapper<UserRole> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(UserRole::getUserId, userId);
+        List<UserRole> userRoles = userRoleMapper.selectList(wrapper);
+        return userRoles.stream()
+                .map(UserRole::getRoleId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void assignRoles(Long userId, List<Long> roleIds) {
+        // 校验用户是否存在
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+
+        // 检查是否是 admin 用户（username = 'admin'）
+        if ("admin".equals(user.getUsername())) {
+            throw new BusinessException("不能修改系统管理员账户的角色");
+        }
+
+        // 检查是否拥有 root 角色
+        List<Long> currentRoleIds = userRoleMapper.selectList(
+                new LambdaQueryWrapper<UserRole>()
+                        .eq(UserRole::getUserId, userId)
+        ).stream().map(UserRole::getRoleId).collect(Collectors.toList());
+
+        if (!currentRoleIds.isEmpty()) {
+            List<Role> roles = roleMapper.selectBatchIds(currentRoleIds);
+            boolean hasRootRole = roles.stream()
+                    .anyMatch(role -> "root".equals(role.getRoleKey()));
+            if (hasRootRole) {
+                throw new BusinessException("不能修改拥有超级管理员角色的用户的角色");
+            }
+        }
+
+        // 删除旧的角色关联
+        LambdaQueryWrapper<UserRole> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(UserRole::getUserId, userId);
+        userRoleMapper.delete(wrapper);
+
+        // 批量插入新的角色关联
+        roleIds.forEach(roleId -> {
+            UserRole userRole = new UserRole();
+            userRole.setUserId(userId);
+            userRole.setRoleId(roleId);
+            userRoleMapper.insert(userRole);
+        });
+
+        log.info("分配角色成功，用户ID: {}, 角色数量: {}", userId, roleIds.size());
     }
 
     /**

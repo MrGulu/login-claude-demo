@@ -53,32 +53,6 @@ rm login-boot/data/login.db
 # 然后重启后端以重新初始化数据库
 ```
 
-## 开发指南
-
-### 后端开发
-
-详细的后端开发指南请参考：[login-boot/README.md](./login-boot/README.md)
-
-主要内容：
-
-- 项目结构说明
-- 添加新接口
-- 异常处理
-- 日志记录
-- 测试编写
-
-### 前端开发
-
-详细的前端开发指南请参考：[login-vue/README.md](./login-vue/README.md)
-
-主要内容：
-
-- 项目结构说明
-- 路由配置
-- API调用
-- 组件开发
-- 样式定制
-
 ## 开发规范
 
 ### 开发流程（重要）
@@ -96,6 +70,7 @@ rm login-boot/data/login.db
 
 ### 代码质量与验证
 - 始终验证 Vue3 组合式 API 中的 async/await 使用
+- 前端 API 响应：axios 拦截器已处理，直接访问 `response.code` 和 `response.data`，不是 `response.data.code`
 - 提交认证相关代码前运行类型检查
 - 彻底测试 ID 生成策略的变更（SQLite getGeneratedKeys 配合 MyBatis Plus）
 - 重构后验证导入路径的正确性
@@ -138,9 +113,10 @@ npm run build              # 构建生产版本
 
 ### 后端配置
 - 使用 SQLite 配合 MyBatis Plus（不使用 Redis，无外部依赖）
-- ID 生成：`@TableId(type = IdType.AUTO)` 配合 SQLite 自增
+- ID 生成：`@TableId(type = IdType.ASSIGN_ID)` - SQLite 不支持 getGeneratedKeys，必须使用雪花算法
 - 验证码校验：仅使用内存存储
 - Maven 必须在 PATH 中以支持 CLI 启动服务
+- 修改实体类后必须重启后端：`taskkill //F //PID <pid> && mvn spring-boot:run`
 
 ## 注意事项
 
@@ -148,3 +124,4 @@ npm run build              # 构建生产版本
 2. 前端调用后端 API 时注意跨域配置
 3. 敏感信息（密码、密钥等）不要提交到代码库
 4. 代码编写遵循最小化原则，只实现必要的功能
+5. Claude Code hooks 必须在非拦截情况下输出原始数据（`process.stdout.write(data)`），否则工具调用失败

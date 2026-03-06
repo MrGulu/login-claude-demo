@@ -20,26 +20,36 @@
         text-color="#333"
         active-text-color="#dc2626"
       >
-        <el-menu-item index="/home" @click="navigate('/home')">
-          <el-icon><HomeFilled /></el-icon>
-          <template #title>首页</template>
-        </el-menu-item>
+        <template v-for="menu in menuList" :key="menu.id">
+          <!-- 目录（有子菜单） -->
+          <el-sub-menu v-if="menu.menuType === 'M' && menu.children && menu.children.length > 0" :index="menu.path">
+            <template #title>
+              <el-icon v-if="menu.icon">
+                <component :is="getIcon(menu.icon)" />
+              </el-icon>
+              <span>{{ menu.menuName }}</span>
+            </template>
+            <el-menu-item
+              v-for="child in menu.children"
+              :key="child.id"
+              :index="child.path"
+              @click="navigate(child.path)"
+            >
+              <el-icon v-if="child.icon">
+                <component :is="getIcon(child.icon)" />
+              </el-icon>
+              <template #title>{{ child.menuName }}</template>
+            </el-menu-item>
+          </el-sub-menu>
 
-        <el-menu-item index="/profile" @click="navigate('/profile')">
-          <el-icon><User /></el-icon>
-          <template #title>个人资料</template>
-        </el-menu-item>
-
-        <el-sub-menu index="system">
-          <template #title>
-            <el-icon><Setting /></el-icon>
-            <span>系统管理</span>
-          </template>
-          <el-menu-item index="/system/users" @click="navigate('/system/users')">
-            <el-icon><User /></el-icon>
-            <template #title>用户管理</template>
+          <!-- 菜单（无子菜单） -->
+          <el-menu-item v-else-if="menu.menuType === 'C'" :index="menu.path" @click="navigate(menu.path)">
+            <el-icon v-if="menu.icon">
+              <component :is="getIcon(menu.icon)" />
+            </el-icon>
+            <template #title>{{ menu.menuName }}</template>
           </el-menu-item>
-        </el-sub-menu>
+        </template>
       </el-menu>
     </nav>
 
@@ -57,17 +67,18 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import {
   TrendCharts,
   HomeFilled,
   User,
-  DataAnalysis,
+  UserFilled,
   Setting,
   SwitchButton
 } from '@element-plus/icons-vue'
+import { getUserMenus } from '@/api/menu'
 
 const props = defineProps({
   collapsed: {
@@ -82,19 +93,48 @@ const router = useRouter()
 const route = useRoute()
 
 const activeMenu = computed(() => route.path)
+const menuList = ref([])
+
+// 图标映射
+const iconMap = {
+  HomeFilled,
+  User,
+  UserFilled,
+  Setting
+}
+
+const getIcon = (iconName) => {
+  return iconMap[iconName] || Setting
+}
+
+// 加载用户菜单
+const loadUserMenus = async () => {
+  try {
+    const response = await getUserMenus()
+    if (response.code === 200) {
+      menuList.value = response.data
+    }
+  } catch (error) {
+    console.error('加载菜单失败:', error)
+  }
+}
 
 const navigate = (path) => {
   if (path === route.path) return
-
   router.push(path)
 }
 
 const handleLogout = () => {
   localStorage.removeItem('token')
   localStorage.removeItem('userInfo')
+  localStorage.removeItem('userPerms')
   ElMessage.success('已退出登录')
   router.push('/login')
 }
+
+onMounted(() => {
+  loadUserMenus()
+})
 </script>
 
 <style scoped>

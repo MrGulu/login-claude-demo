@@ -29,6 +29,21 @@ request.interceptors.response.use(
     const res = response.data
     console.log('响应数据:', res)
 
+    // 检查 Token 过期（code 3003）
+    if (res.code === 3003) {
+      const errorMsg = res.message || 'Token已过期'
+      showError(errorMsg)
+      // 清除本地存储
+      localStorage.removeItem('token')
+      localStorage.removeItem('userInfo')
+      localStorage.removeItem('userPerms')
+      // 延迟跳转到登录页，让用户看到提示
+      setTimeout(() => {
+        window.location.href = '/login'
+      }, 1500)
+      return Promise.reject(new Error(errorMsg))
+    }
+
     // 如果返回的状态码不是200，说明接口请求失败
     if (res.code !== 200) {
       const errorMsg = res.message || res.msg || '请求失败'
@@ -48,6 +63,21 @@ request.interceptors.response.use(
       // 优先使用后端返回的错误信息
       const errorData = error.response.data
 
+      // 检查是否是 Token 过期
+      if (errorData && errorData.code === 3003) {
+        message = errorData.message || 'Token已过期'
+        // 清除本地存储
+        localStorage.removeItem('token')
+        localStorage.removeItem('userInfo')
+        localStorage.removeItem('userPerms')
+        showError(message)
+        // 延迟跳转到登录页
+        setTimeout(() => {
+          window.location.href = '/login'
+        }, 1500)
+        return Promise.reject(error)
+      }
+
       // 尝试多种可能的错误信息字段
       if (errorData) {
         message = errorData.message || errorData.msg || errorData.error || errorData.errorMessage
@@ -64,6 +94,11 @@ request.interceptors.response.use(
             // 清除token
             localStorage.removeItem('token')
             localStorage.removeItem('userInfo')
+            localStorage.removeItem('userPerms')
+            // 跳转到登录页
+            setTimeout(() => {
+              window.location.href = '/login'
+            }, 1500)
             break
           case 403:
             message = errorData?.message || errorData?.msg || '拒绝访问'

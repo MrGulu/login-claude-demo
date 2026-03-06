@@ -1,9 +1,9 @@
 <template>
-  <div class="user-management">
+  <div class="role-management">
     <!-- 页面标题 -->
     <div class="page-header">
-      <h1 class="page-title">用户管理</h1>
-      <p class="page-subtitle">管理系统用户账号与权限</p>
+      <h1 class="page-title">角色管理</h1>
+      <p class="page-subtitle">管理系统角色与权限分配</p>
     </div>
 
     <!-- 搜索区域 -->
@@ -11,22 +11,11 @@
       <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item>
           <el-input
-            v-model="searchForm.username"
-            placeholder="搜索用户名"
+            v-model="searchForm.roleName"
+            placeholder="搜索角色名称"
             clearable
             prefix-icon="Search"
             class="search-input"
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-input
-            v-model="searchForm.phone"
-            placeholder="搜索手机号"
-            clearable
-            prefix-icon="Phone"
-            class="search-input"
-            @input="handlePhoneInput"
-            maxlength="11"
           />
         </el-form-item>
         <el-form-item>
@@ -53,8 +42,8 @@
 
     <!-- 操作栏 -->
     <div class="toolbar">
-      <el-button v-permission="'system:user:add'" type="primary" :icon="Plus" @click="handleAdd" class="add-btn">
-        新增用户
+      <el-button v-permission="'system:role:add'" type="primary" :icon="Plus" @click="handleAdd" class="add-btn">
+        新增角色
       </el-button>
       <div class="toolbar-info">
         共 <span class="count">{{ pagination.total }}</span> 条记录
@@ -66,21 +55,39 @@
       <el-table
         :data="tableData"
         v-loading="loading"
-        class="user-table"
+        class="role-table"
         header-row-class-name="table-header"
         row-class-name="table-row"
       >
-        <el-table-column prop="username" label="用户名" width="140">
+        <el-table-column prop="roleName" label="角色名称" width="160">
           <template #default="{ row }">
-            <div class="username-cell">
-              <el-icon class="user-icon"><User /></el-icon>
-              <span>{{ row.username }}</span>
+            <div class="role-cell">
+              <el-icon class="role-icon"><UserFilled /></el-icon>
+              <span>{{ row.roleName }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="nickname" label="昵称" width="140" />
-        <el-table-column prop="email" label="邮箱" width="200" show-overflow-tooltip />
-        <el-table-column prop="phone" label="手机号" width="140" />
+        <el-table-column prop="roleKey" label="角色标识" width="160" />
+        <el-table-column label="系统角色" width="120" align="center">
+          <template #default="{ row }">
+            <el-tag
+              v-if="row.isSystem === 1"
+              type="danger"
+              effect="light"
+              class="status-tag"
+            >
+              系统角色
+            </el-tag>
+            <el-tag
+              v-else
+              type="info"
+              effect="light"
+              class="status-tag"
+            >
+              普通角色
+            </el-tag>
+          </template>
+        </el-table-column>
         <el-table-column label="状态" width="100" align="center">
           <template #default="{ row }">
             <el-tag
@@ -101,41 +108,36 @@
             </el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="sort" label="排序" width="80" align="center" />
+        <el-table-column prop="remark" label="备注" show-overflow-tooltip />
         <el-table-column prop="createTime" label="创建时间" width="180" />
-        <el-table-column label="操作" width="280" fixed="right" align="center">
+        <el-table-column label="操作" width="300" fixed="right" align="center">
           <template #default="{ row }">
             <div class="action-buttons">
-              <el-button v-permission="'system:user:edit'" 
+              <el-button v-permission="'system:role:edit'" 
                 type="primary"
                 size="small"
                 @click="handleEdit(row)"
+                :disabled="row.isSystem === 1"
                 class="action-btn"
               >
                 <el-icon><Edit /></el-icon>
                 编辑
               </el-button>
-              <el-button v-permission="'system:user:role'" :disabled="row.username === 'admin'" 
-                type="info"
+              <el-button v-permission="'system:role:assign'" 
+                type="warning"
                 size="small"
-                @click="handleAssignRole(row)"
+                @click="handleAssignMenu(row)"
                 class="action-btn"
               >
-                <el-icon><UserFilled /></el-icon>
-                角色
+                <el-icon><Setting /></el-icon>
+                权限
               </el-button>
-              <el-button v-permission="'system:user:status'" :disabled="row.username === 'admin'" 
-                :type="row.status === 1 ? 'warning' : 'success'"
-                size="small"
-                @click="handleStatusChange(row)"
-                class="action-btn"
-              >
-                <el-icon><Switch /></el-icon>
-                {{ row.status === 1 ? '禁用' : '启用' }}
-              </el-button>
-              <el-button v-permission="'system:user:delete'" :disabled="row.username === 'admin'" 
+              <el-button v-permission="'system:role:delete'" 
                 type="danger"
                 size="small"
                 @click="handleDelete(row)"
+                :disabled="row.isSystem === 1"
                 class="action-btn"
               >
                 <el-icon><Delete /></el-icon>
@@ -149,8 +151,8 @@
       <!-- 分页器 -->
       <div class="pagination-container">
         <el-pagination
-          v-model:current-page="pagination.pageNum"
-          v-model:page-size="pagination.pageSize"
+          v-model:current-page="pagination.page"
+          v-model:page-size="pagination.size"
           :page-sizes="[10, 20, 50, 100]"
           :total="pagination.total"
           layout="total, sizes, prev, pager, next, jumper"
@@ -163,69 +165,45 @@
       </div>
     </div>
 
-    <!-- 新增/编辑对话框 -->
+    <!-- 新增/编辑角色对话框 -->
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
       width="560px"
       @close="handleDialogClose"
-      class="user-dialog"
+      class="role-dialog"
     >
       <el-form
-        ref="formRef"
-        :model="formData"
-        :rules="rules"
+        ref="roleFormRef"
+        :model="roleForm"
+        :rules="roleRules"
         label-width="90px"
-        class="user-form"
+        class="role-form"
       >
-        <el-form-item label="用户名" prop="username">
+        <el-form-item label="角色名称" prop="roleName">
           <el-input
-            v-model="formData.username"
-            placeholder="请输入用户名（3-50字符）"
-            :disabled="isEdit"
+            v-model="roleForm.roleName"
+            placeholder="请输入角色名称"
           />
         </el-form-item>
-        <el-form-item label="密码" prop="password" :required="!isEdit">
+        <el-form-item label="角色标识" prop="roleKey">
           <el-input
-            v-model="formData.password"
-            type="password"
-            placeholder="请输入密码（6-20字符）"
-            show-password
-          />
-          <div v-if="isEdit" class="form-tip">
-            <el-icon><InfoFilled /></el-icon>
-            不填写则不修改密码
-          </div>
-        </el-form-item>
-        <el-form-item label="昵称" prop="nickname">
-          <el-input
-            v-model="formData.nickname"
-            placeholder="请输入昵称"
-          />
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input
-            v-model="formData.email"
-            placeholder="请输入邮箱地址"
-          />
-        </el-form-item>
-        <el-form-item label="手机号" prop="phone">
-          <el-input
-            v-model="formData.phone"
-            placeholder="请输入手机号"
-            maxlength="11"
-            @input="handleFormPhoneInput"
+            v-model="roleForm.roleKey"
+            placeholder="请输入角色标识，如：manager"
           />
         </el-form-item>
         <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="formData.status" class="status-radio">
+          <el-radio-group v-model="roleForm.status" class="status-radio">
             <el-radio :label="1" border>正常</el-radio>
             <el-radio :label="0" border>禁用</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item label="排序" prop="sort">
+          <el-input-number v-model="roleForm.sort" :min="0" />
+        </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input
-            v-model="formData.remark"
+            v-model="roleForm.remark"
             type="textarea"
             :rows="3"
             placeholder="请输入备注信息（选填）"
@@ -243,41 +221,41 @@
             :loading="submitLoading"
             class="submit-btn"
           >
-            {{ isEdit ? '保存修改' : '立即创建' }}
+            {{ editingRoleId ? '保存修改' : '立即创建' }}
           </el-button>
         </div>
       </template>
     </el-dialog>
 
-    <!-- 分配角色对话框 -->
+    <!-- 分配菜单权限对话框 -->
     <el-dialog
-      v-model="roleDialogVisible"
-      title="分配角色"
-      width="500px"
-      @close="handleRoleDialogClose"
-      class="role-dialog"
+      v-model="menuDialogVisible"
+      title="分配菜单权限"
+      width="600px"
+      @close="handleMenuDialogClose"
+      class="menu-dialog"
     >
-      <el-checkbox-group v-model="selectedRoles" class="role-checkbox-group">
-        <el-checkbox
-          v-for="role in roleList"
-          :key="role.id"
-          :label="role.id"
-          :disabled="role.isSystem === 1"
-          class="role-checkbox"
-        >
-          {{ role.roleName }}
-          <el-tag v-if="role.isSystem === 1" type="danger" size="small" style="margin-left: 8px">
-            系统角色
-          </el-tag>
-        </el-checkbox>
-      </el-checkbox-group>
+      <div class="menu-tree-container">
+        <el-tree
+          ref="menuTreeRef"
+          :data="menuTreeData"
+          :props="{ label: 'menuName', children: 'children' }"
+          node-key="id"
+          show-checkbox
+          default-expand-all
+          :check-strictly="false"
+          class="permission-tree"
+        />
+      </div>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="roleDialogVisible = false" class="cancel-btn">取消</el-button>
+          <el-button @click="handleExpandAll" class="tree-btn">展开/折叠</el-button>
+          <el-button @click="handleCheckAll" class="tree-btn">全选/取消</el-button>
+          <el-button @click="menuDialogVisible = false" class="cancel-btn">取消</el-button>
           <el-button
             type="primary"
-            @click="handleRoleSubmit"
-            :loading="roleSubmitting"
+            @click="handleMenuSubmit"
+            :loading="menuSubmitting"
             class="submit-btn"
           >
             确定
@@ -291,21 +269,28 @@
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search, User, UserFilled, Edit, Delete, Switch, Phone, InfoFilled } from '@element-plus/icons-vue'
-import { getUserList as getUserListApi, createUser, updateUser, deleteUser as deleteUserApi, updateUserStatus as updateUserStatusApi, getUserRoles, assignRoles } from '@/api/userManagement'
-import { getRoleList } from '@/api/role'
+import { Plus, Search, UserFilled, Edit, Delete, Setting } from '@element-plus/icons-vue'
+import {
+  getRoleList,
+  createRole,
+  updateRole,
+  deleteRole,
+  getRoleMenus,
+  assignMenus
+} from '@/api/role'
+import { getMenuTree } from '@/api/menu'
 
 // 搜索表单
 const searchForm = reactive({
-  username: '',
-  phone: '',
+  roleName: '',
+  roleKey: '',
   status: null
 })
 
 // 分页
 const pagination = reactive({
-  pageNum: 1,
-  pageSize: 10,
+  page: 1,
+  size: 10,
   total: 0
 })
 
@@ -315,88 +300,71 @@ const loading = ref(false)
 
 // 对话框
 const dialogVisible = ref(false)
-const dialogTitle = computed(() => isEdit.value ? '编辑用户' : '新增用户')
-const isEdit = ref(false)
+const dialogTitle = computed(() => editingRoleId.value ? '编辑角色' : '新增角色')
+const editingRoleId = ref(null)
 const submitLoading = ref(false)
 
 // 表单
-const formRef = ref()
-const formData = reactive({
-  id: null,
-  username: '',
-  password: '',
-  nickname: '',
-  email: '',
-  phone: '',
+const roleFormRef = ref(null)
+const roleForm = reactive({
+  roleName: '',
+  roleKey: '',
   status: 1,
+  sort: 0,
   remark: ''
 })
 
 // 表单验证规则
-const rules = {
-  username: [
-    { required: true, message: '请输入用户名', trigger: 'blur' },
-    { min: 3, max: 50, message: '长度在3-50个字符', trigger: 'blur' }
+const roleRules = {
+  roleName: [
+    { required: true, message: '请输入角色名称', trigger: 'blur' },
+    { min: 2, max: 50, message: '长度在2-50个字符', trigger: 'blur' }
   ],
-  password: [
-    {
-      validator: (rule, value, callback) => {
-        if (!isEdit.value && !value) {
-          callback(new Error('请输入密码'))
-        } else if (value && (value.length < 6 || value.length > 20)) {
-          callback(new Error('密码长度在6-20个字符'))
-        } else {
-          callback()
-        }
-      },
-      trigger: ['blur', 'change']
-    }
+  roleKey: [
+    { required: true, message: '请输入角色标识', trigger: 'blur' },
+    { min: 2, max: 50, message: '长度在2-50个字符', trigger: 'blur' }
   ],
-  nickname: [
-    { max: 50, message: '昵称长度不能超过50个字符', trigger: 'blur' }
-  ],
-  email: [
-    { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur' },
-    { max: 100, message: '邮箱长度不能超过100个字符', trigger: 'blur' }
-  ],
-  phone: [
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
-  ],
-  remark: [
-    { max: 500, message: '备注长度不能超过500个字符', trigger: 'blur' }
+  status: [
+    { required: true, message: '请选择状态', trigger: 'change' }
   ]
 }
 
-// 角色分配对话框
-const roleDialogVisible = ref(false)
-const roleList = ref([])
-const selectedRoles = ref([])
-const currentUserId = ref(null)
-const roleSubmitting = ref(false)
+// 菜单权限对话框
+const menuDialogVisible = ref(false)
+const menuTreeRef = ref(null)
+const menuTreeData = ref([])
+const currentRoleId = ref(null)
+const menuSubmitting = ref(false)
+const isExpanded = ref(true)
+const isCheckedAll = ref(false)
 
-// 获取用户列表
-const getUserList = async () => {
+// 加载角色列表
+const loadRoleList = async () => {
   loading.value = true
   try {
     const params = {
-      pageNum: pagination.pageNum,
-      pageSize: pagination.pageSize,
-      username: searchForm.username || undefined,
-      phone: searchForm.phone || undefined,
+      page: pagination.page,
+      size: pagination.size,
+      roleName: searchForm.roleName || undefined,
+      roleKey: searchForm.roleKey || undefined,
       status: searchForm.status
     }
-
-    const response = await getUserListApi(params)
+    const response = await getRoleList(params)
+    console.log('角色列表响应:', response)
+    console.log('response.data:', response.data)
+    console.log('response.data.records:', response.data?.records)
 
     if (response.code === 200) {
-      tableData.value = response.data.list
-      pagination.total = response.data.total
+      tableData.value = response.data.records
+      pagination.total = parseInt(response.data.total)
+      console.log('tableData:', tableData.value)
+      console.log('pagination.total:', pagination.total)
     } else {
-      ElMessage.error(response.message || '获取用户列表失败')
+      ElMessage.error(response.message || '加载角色列表失败')
     }
   } catch (error) {
-    console.error('获取用户列表失败:', error)
-    ElMessage.error('获取用户列表失败')
+    console.error('加载角色列表失败:', error)
+    ElMessage.error('加载角色列表失败')
   } finally {
     loading.value = false
   }
@@ -404,62 +372,51 @@ const getUserList = async () => {
 
 // 搜索
 const handleSearch = () => {
-  pagination.pageNum = 1
-  getUserList()
-}
-
-// 限制手机号只能输入数字
-const handlePhoneInput = (value) => {
-  searchForm.phone = value.replace(/\D/g, '')
-}
-
-// 限制表单手机号只能输入数字
-const handleFormPhoneInput = (value) => {
-  formData.phone = value.replace(/\D/g, '')
+  pagination.page = 1
+  loadRoleList()
 }
 
 // 重置
 const handleReset = () => {
-  searchForm.username = ''
-  searchForm.phone = ''
+  searchForm.roleName = ''
+  searchForm.roleKey = ''
   searchForm.status = null
+  pagination.page = 1
+  loadRoleList()
 }
 
 // 分页
-const handleSizeChange = (val) => {
-  pagination.pageSize = val
-  getUserList()
+const handleSizeChange = () => {
+  loadRoleList()
 }
 
-const handleCurrentChange = (val) => {
-  pagination.pageNum = val
-  getUserList()
+const handleCurrentChange = () => {
+  loadRoleList()
 }
 
 // 新增
 const handleAdd = () => {
-  isEdit.value = false
+  editingRoleId.value = null
   dialogVisible.value = true
 }
 
 // 编辑
 const handleEdit = (row) => {
-  isEdit.value = true
-  formData.id = row.id
-  formData.username = row.username
-  formData.password = ''
-  formData.nickname = row.nickname
-  formData.email = row.email
-  formData.phone = row.phone
-  formData.status = row.status
-  formData.remark = row.remark
+  editingRoleId.value = row.id
+  Object.assign(roleForm, {
+    roleName: row.roleName,
+    roleKey: row.roleKey,
+    status: row.status,
+    sort: row.sort,
+    remark: row.remark
+  })
   dialogVisible.value = true
 }
 
 // 删除
 const handleDelete = (row) => {
   ElMessageBox.confirm(
-    `确定要删除用户"${row.username}"吗？删除后将无法恢复。`,
+    `确定要删除角色"${row.roleName}"吗？删除后将无法恢复。`,
     '删除确认',
     {
       confirmButtonText: '确定删除',
@@ -469,101 +426,50 @@ const handleDelete = (row) => {
     }
   ).then(async () => {
     try {
-      const response = await deleteUserApi(row.id)
+      const response = await deleteRole(row.id)
       if (response.code === 200) {
         ElMessage.success('删除成功')
-        getUserList()
+        loadRoleList()
       } else {
         ElMessage.error(response.message || '删除失败')
       }
     } catch (error) {
       console.error('删除失败:', error)
-      ElMessage.error('删除失败')
+      ElMessage.error(error.response?.data?.message || '删除失败')
     }
   }).catch(() => {
     // 取消删除
   })
 }
 
-// 状态切换
-const handleStatusChange = (row) => {
-  const action = row.status === 1 ? '禁用' : '启用'
-  const newStatus = row.status === 1 ? 0 : 1
-  ElMessageBox.confirm(
-    `确定要${action}用户"${row.username}"吗？`,
-    '状态变更',
-    {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true
-    }
-  ).then(async () => {
-    try {
-      const response = await updateUserStatusApi(row.id, newStatus)
-      if (response.code === 200) {
-        ElMessage.success(`${action}成功`)
-        getUserList()
-      } else {
-        ElMessage.error(response.message || `${action}失败`)
-      }
-    } catch (error) {
-      console.error(`${action}失败:`, error)
-      ElMessage.error(`${action}失败`)
-    }
-  }).catch(() => {
-    // 取消操作
-  })
-}
-
 // 提交表单
 const handleSubmit = async () => {
-  if (!formRef.value) return
+  if (!roleFormRef.value) return
 
   try {
-    await formRef.value.validate()
+    await roleFormRef.value.validate()
     submitLoading.value = true
 
-    // 准备提交数据
-    const submitData = {
-      username: formData.username,
-      nickname: formData.nickname || undefined,
-      email: formData.email || undefined,
-      phone: formData.phone || undefined,
-      status: formData.status,
-      remark: formData.remark || undefined
+    const data = { ...roleForm }
+    let response
+    if (editingRoleId.value) {
+      response = await updateRole(editingRoleId.value, data)
+    } else {
+      response = await createRole(data)
     }
 
-    // 如果是编辑模式
-    if (isEdit.value) {
-      // 只有填写了密码才提交密码字段
-      if (formData.password) {
-        submitData.password = formData.password
-      }
-      const response = await updateUser(formData.id, submitData)
-      if (response.code === 200) {
-        ElMessage.success('更新成功')
-        dialogVisible.value = false
-        getUserList()
-      } else {
-        ElMessage.error(response.message || '更新失败')
-      }
+    if (response.code === 200) {
+      ElMessage.success(editingRoleId.value ? '更新成功' : '创建成功')
+      dialogVisible.value = false
+      loadRoleList()
     } else {
-      // 创建模式，密码必填
-      submitData.password = formData.password
-      const response = await createUser(submitData)
-      if (response.code === 200) {
-        ElMessage.success('创建成功')
-        dialogVisible.value = false
-        getUserList()
-      } else {
-        ElMessage.error(response.message || '创建失败')
-      }
+      ElMessage.error(response.message || '操作失败')
     }
   } catch (error) {
     console.error('提交失败:', error)
-    // 表单验证失败时不显示错误提示（Element Plus会自动显示字段错误）
-    // 只有API调用失败时才显示错误提示
+    if (error.response) {
+      ElMessage.error(error.response.data.message || '操作失败')
+    }
   } finally {
     submitLoading.value = false
   }
@@ -571,74 +477,126 @@ const handleSubmit = async () => {
 
 // 关闭对话框
 const handleDialogClose = () => {
-  formRef.value?.resetFields()
-  formData.id = null
-  formData.username = ''
-  formData.password = ''
-  formData.nickname = ''
-  formData.email = ''
-  formData.phone = ''
-  formData.status = 1
-  formData.remark = ''
+  roleFormRef.value?.resetFields()
+  Object.assign(roleForm, {
+    roleName: '',
+    roleKey: '',
+    status: 1,
+    sort: 0,
+    remark: ''
+  })
 }
 
-// 分配角色
-const handleAssignRole = async (row) => {
-  currentUserId.value = row.id
-  roleDialogVisible.value = true
+// 分配菜单权限
+const handleAssignMenu = async (row) => {
+  console.log('分配权限 - row:', row)
+  console.log('分配权限 - row.id:', row.id)
+  currentRoleId.value = row.id
+  menuDialogVisible.value = true
 
-  // 加载角色列表
-  try {
-    const response = await getRoleList({ page: 1, size: 100 })
-    if (response.code === 200) {
-      roleList.value = response.data.records
+  // 加载菜单树（防抖，首次加载后缓存）
+  if (menuTreeData.value.length === 0) {
+    try {
+      const response = await getMenuTree()
+      if (response.code === 200) {
+        menuTreeData.value = response.data
+      }
+    } catch (error) {
+      ElMessage.error('加载菜单树失败')
+      return
     }
-  } catch (error) {
-    ElMessage.error('加载角色列表失败')
-    return
   }
 
-  // 加载用户已有的角色
+
+  // 加载角色已有的菜单权限
   try {
-    const response = await getUserRoles(row.id)
+    const response = await getRoleMenus(row.id)
     if (response.code === 200) {
-      selectedRoles.value = response.data
+      // 等待树渲染完成后设置选中
+      setTimeout(() => {
+        // 过滤出叶子节点（没有子节点的节点）
+        const leafKeys = response.data.filter(id => {
+          const node = menuTreeRef.value?.getNode(id)
+          return node && (!node.childNodes || node.childNodes.length === 0)
+        })
+        menuTreeRef.value?.setCheckedKeys(leafKeys, false)
+      }, 100)
     }
   } catch (error) {
-    ElMessage.error('加载用户角色失败')
+    ElMessage.error('加载角色权限失败')
   }
+
+
+
+
+
+
+
+
+
+
+
 }
 
-// 提交角色分配
-const handleRoleSubmit = async () => {
-  if (selectedRoles.value.length === 0) {
-    ElMessage.warning('请至少选择一个角色')
-    return
-  }
-
+// 提交菜单权限
+const handleMenuSubmit = async () => {
   try {
-    roleSubmitting.value = true
-    const response = await assignRoles(currentUserId.value, selectedRoles.value)
+    menuSubmitting.value = true
+    // 获取选中的节点（包括半选节点）
+    const checkedKeys = menuTreeRef.value.getCheckedKeys()
+    const halfCheckedKeys = menuTreeRef.value.getHalfCheckedKeys()
+    const menuIds = [...checkedKeys, ...halfCheckedKeys]
+
+    const response = await assignMenus(currentRoleId.value, { menuIds })
     if (response.code === 200) {
-      ElMessage.success('分配角色成功')
-      roleDialogVisible.value = false
+      ElMessage.success('分配权限成功')
+      menuDialogVisible.value = false
     }
   } catch (error) {
-    ElMessage.error(error.response?.data?.message || '分配角色失败')
+    ElMessage.error(error.response?.data?.message || '分配权限失败')
   } finally {
-    roleSubmitting.value = false
+    menuSubmitting.value = false
   }
 }
 
-// 关闭角色对话框
-const handleRoleDialogClose = () => {
-  selectedRoles.value = []
-  currentUserId.value = null
+// 关闭菜单对话框
+const handleMenuDialogClose = () => {
+  menuTreeRef.value?.setCheckedKeys([], false)
 }
 
-// 初始化
+// 展开/折叠
+const handleExpandAll = () => {
+  isExpanded.value = !isExpanded.value
+  const nodes = menuTreeRef.value?.store?.nodesMap
+  if (nodes) {
+    Object.values(nodes).forEach(node => {
+      node.expanded = isExpanded.value
+    })
+  }
+}
+
+// 全选/取消
+const handleCheckAll = () => {
+  isCheckedAll.value = !isCheckedAll.value
+  if (isCheckedAll.value) {
+    const allKeys = []
+    const collectKeys = (nodes) => {
+      nodes.forEach(node => {
+        allKeys.push(node.id)
+        if (node.children && node.children.length > 0) {
+          collectKeys(node.children)
+        }
+      })
+    }
+    collectKeys(menuTreeData.value)
+    menuTreeRef.value?.setCheckedKeys(allKeys, false)
+  } else {
+    menuTreeRef.value?.setCheckedKeys([], false)
+  }
+}
+
 onMounted(() => {
-  getUserList()
+  loadRoleList()
 })
 </script>
 
@@ -646,7 +604,7 @@ onMounted(() => {
 /* 导入优雅字体 */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
-.user-management {
+.role-management {
   min-height: 100vh;
   padding: 24px 32px;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -838,15 +796,15 @@ onMounted(() => {
 }
 
 /* 表格样式 */
-.user-table {
+.role-table {
   font-family: 'Inter', sans-serif;
 }
 
-.user-table :deep(.table-header) {
+.role-table :deep(.table-header) {
   background: #f8f9fa;
 }
 
-.user-table :deep(.table-header th) {
+.role-table :deep(.table-header th) {
   font-weight: 600;
   font-size: 13px;
   color: #495057;
@@ -856,27 +814,27 @@ onMounted(() => {
   border-bottom: 2px solid #e9ecef;
 }
 
-.user-table :deep(.table-row) {
+.role-table :deep(.table-row) {
   transition: all 0.3s ease;
 }
 
-.user-table :deep(.table-row:hover) {
+.role-table :deep(.table-row:hover) {
   background: #f8f9fa;
   transform: scale(1.01);
 }
 
-.user-table :deep(.el-table__cell) {
+.role-table :deep(.el-table__cell) {
   padding: 12px 12px;
   border-bottom: 1px solid #f1f3f5;
 }
 
-.username-cell {
+.role-cell {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.user-icon {
+.role-icon {
   color: #dc2626;
   font-size: 16px;
 }
@@ -925,6 +883,13 @@ onMounted(() => {
   transform: translateY(-1px);
 }
 
+.action-btn.el-button--primary:disabled {
+  background: #9ca3af;
+  color: #d1d5db;
+  cursor: not-allowed;
+  transform: none;
+}
+
 .action-btn.el-button--warning {
   background: #f59e0b;
   color: white;
@@ -933,18 +898,6 @@ onMounted(() => {
 
 .action-btn.el-button--warning:hover {
   background: #d97706;
-  border: none;
-  transform: translateY(-1px);
-}
-
-.action-btn.el-button--success {
-  background: #10b981;
-  color: white;
-  border: none;
-}
-
-.action-btn.el-button--success:hover {
-  background: #059669;
   border: none;
   transform: translateY(-1px);
 }
@@ -961,16 +914,11 @@ onMounted(() => {
   transform: translateY(-1px);
 }
 
-.action-btn.el-button--info {
-  background: #6366f1;
-  color: white;
-  border: none;
-}
-
-.action-btn.el-button--info:hover {
-  background: #4f46e5;
-  border: none;
-  transform: translateY(-1px);
+.action-btn.el-button--danger:disabled {
+  background: #9ca3af;
+  color: #d1d5db;
+  cursor: not-allowed;
+  transform: none;
 }
 
 /* 分页器 */
@@ -1002,69 +950,64 @@ onMounted(() => {
 }
 
 /* 对话框 */
-.user-dialog :deep(.el-dialog) {
+.role-dialog :deep(.el-dialog),
+.menu-dialog :deep(.el-dialog) {
   border-radius: 20px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
-.user-dialog :deep(.el-dialog__header) {
+.role-dialog :deep(.el-dialog__header),
+.menu-dialog :deep(.el-dialog__header) {
   padding: 32px 32px 24px;
   border-bottom: 1px solid #f1f3f5;
 }
 
-.user-dialog :deep(.el-dialog__title) {
+.role-dialog :deep(.el-dialog__title),
+.menu-dialog :deep(.el-dialog__title) {
   font-family: 'Playfair Display', serif;
   font-size: 24px;
   font-weight: 600;
   color: #1a1a1a;
 }
 
-.user-dialog :deep(.el-dialog__body) {
+.role-dialog :deep(.el-dialog__body),
+.menu-dialog :deep(.el-dialog__body) {
   padding: 32px;
 }
 
-.user-form :deep(.el-form-item__label) {
+.role-form :deep(.el-form-item__label) {
   font-family: 'Inter', sans-serif;
   font-weight: 500;
   color: #495057;
 }
 
-.user-form :deep(.el-input__wrapper) {
+.role-form :deep(.el-input__wrapper) {
   border-radius: 10px;
   box-shadow: 0 0 0 1px #e0e0e0 inset;
   transition: all 0.3s ease;
 }
 
-.user-form :deep(.el-input__wrapper:hover) {
+.role-form :deep(.el-input__wrapper:hover) {
   box-shadow: 0 0 0 1px #c0c0c0 inset;
 }
 
-.user-form :deep(.el-input__wrapper.is-focus) {
+.role-form :deep(.el-input__wrapper.is-focus) {
   box-shadow: 0 0 0 2px #dc2626 inset;
 }
 
-.user-form :deep(.el-textarea__inner) {
+.role-form :deep(.el-textarea__inner) {
   border-radius: 10px;
   border: 1px solid #e0e0e0;
   transition: all 0.3s ease;
 }
 
-.user-form :deep(.el-textarea__inner:hover) {
+.role-form :deep(.el-textarea__inner:hover) {
   border-color: #c0c0c0;
 }
 
-.user-form :deep(.el-textarea__inner:focus) {
+.role-form :deep(.el-textarea__inner:focus) {
   border-color: #dc2626;
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-}
-
-.form-tip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #6c757d;
-  margin-top: 8px;
 }
 
 .status-radio :deep(.el-radio) {
@@ -1090,14 +1033,16 @@ onMounted(() => {
   border-top: 1px solid #f1f3f5;
 }
 
-.cancel-btn {
+.cancel-btn,
+.tree-btn {
   border-radius: 10px;
   padding: 12px 28px;
   font-weight: 500;
   transition: all 0.3s ease;
 }
 
-.cancel-btn:hover {
+.cancel-btn:hover,
+.tree-btn:hover {
   transform: translateY(-2px);
 }
 
@@ -1115,42 +1060,42 @@ onMounted(() => {
   box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
 }
 
-/* 角色对话框 */
-.role-dialog :deep(.el-dialog) {
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-}
-
-.role-checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.role-checkbox {
+/* 菜单树容器 */
+.menu-tree-container {
+  max-height: 400px;
+  overflow-y: auto;
   padding: 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  transition: all 0.3s ease;
+  background: #f8f9fa;
+  border-radius: 10px;
 }
 
-.role-checkbox:hover {
-  border-color: #dc2626;
-  background: rgba(220, 38, 38, 0.05);
+.menu-tree-container::-webkit-scrollbar {
+  width: 6px;
 }
 
-.role-checkbox :deep(.el-checkbox__label) {
-  font-weight: 500;
+.menu-tree-container::-webkit-scrollbar-thumb {
+  background: #dc2626;
+  border-radius: 3px;
+}
+
+.permission-tree :deep(.el-tree-node__content) {
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.permission-tree :deep(.el-tree-node__content:hover) {
+  background: rgba(220, 38, 38, 0.08);
 }
 
 /* 响应式 */
 @media (max-width: 768px) {
-  .user-management {
+  .role-management {
     padding: 20px;
   }
 
   .page-title {
-    font-size: 32px;
+    font-size: 28px;
   }
 
   .search-section,

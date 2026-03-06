@@ -89,3 +89,27 @@ export function updateUserStatus(id, status) {
     data: { status }
   })
 }
+
+/**
+ * 获取用户的角色列表
+ * @param {number} id - 用户ID
+ */
+export function getUserRoles(id) {
+  return request({
+    url: `/admin/users/${id}/roles`,
+    method: 'get'
+  })
+}
+
+/**
+ * 分配角色给用户
+ * @param {number} id - 用户ID
+ * @param {Array<number>} roleIds - 角色ID列表
+ */
+export function assignRoles(id, roleIds) {
+  return request({
+    url: `/admin/users/${id}/roles`,
+    method: 'put',
+    data: { roleIds }
+  })
+}
