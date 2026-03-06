@@ -176,50 +176,60 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="920px"
+      width="800px"
       @close="handleDialogClose"
       class="role-dialog"
+      :close-on-click-modal="false"
     >
       <el-form
         ref="roleFormRef"
         :model="roleForm"
         :rules="roleRules"
-        label-width="70px"
         class="role-form"
+        label-position="top"
       >
-        <div class="form-grid">
-          <!-- 第一行：角色名称、角色标识 -->
-          <el-form-item label="角色名称" prop="roleName" class="form-grid-item">
+        <div class="form-row">
+          <el-form-item label="角色名称" prop="roleName" class="form-col">
             <el-input
               v-model="roleForm.roleName"
-              placeholder="如：系统管理员"
+              placeholder="请输入角色名称"
+              size="large"
             />
           </el-form-item>
-          <el-form-item label="角色标识" prop="roleKey" class="form-grid-item">
+          <el-form-item label="角色标识" prop="roleKey" class="form-col">
             <el-input
               v-model="roleForm.roleKey"
-              placeholder="如：admin"
+              placeholder="请输入角色标识，如：admin"
+              size="large"
             />
           </el-form-item>
+        </div>
 
-          <!-- 第二行：状态、排序 -->
-          <el-form-item label="状态" prop="status" class="form-grid-item">
-            <el-radio-group v-model="roleForm.status" class="status-radio">
+        <div class="form-row">
+          <el-form-item label="状态" prop="status" class="form-col">
+            <el-radio-group v-model="roleForm.status" class="status-radio" size="large">
               <el-radio :label="1" border>正常</el-radio>
               <el-radio :label="0" border>禁用</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="排序" prop="sort" class="form-grid-item">
-            <el-input-number v-model="roleForm.sort" :min="0" class="sort-input" controls-position="right" />
+          <el-form-item label="排序" prop="sort" class="form-col">
+            <el-input-number
+              v-model="roleForm.sort"
+              :min="0"
+              class="sort-input"
+              controls-position="right"
+              size="large"
+            />
           </el-form-item>
+        </div>
 
-          <!-- 第三行：备注（跨两列） -->
-          <el-form-item label="备注" prop="remark" class="form-grid-item form-grid-full">
+        <div class="form-row">
+          <el-form-item label="备注" prop="remark" class="form-col-full">
             <el-input
               v-model="roleForm.remark"
               type="textarea"
-              :rows="2"
-              placeholder="选填备注信息"
+              :rows="3"
+              placeholder="请输入备注信息（选填）"
               maxlength="500"
               show-word-limit
             />
@@ -228,11 +238,12 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button @click="dialogVisible = false" class="cancel-btn">取消</el-button>
+          <el-button @click="dialogVisible = false" size="large" class="cancel-btn">取消</el-button>
           <el-button
             type="primary"
             @click="handleSubmit"
             :loading="submitLoading"
+            size="large"
             class="submit-btn"
           >
             {{ editingRoleId ? '保存修改' : '立即创建' }}
@@ -1057,132 +1068,107 @@ onMounted(() => {
 /* 对话框 */
 .role-dialog :deep(.el-dialog),
 .menu-dialog :deep(.el-dialog) {
-  border-radius: 24px;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.18);
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
   overflow: hidden;
-  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
 }
 
 .role-dialog :deep(.el-dialog__header),
 .menu-dialog :deep(.el-dialog__header) {
-  padding: 28px 40px 20px;
-  border-bottom: 2px solid transparent;
-  background: linear-gradient(to right, #f8f9fa 0%, #ffffff 100%);
-  position: relative;
-}
-
-.role-dialog :deep(.el-dialog__header)::after,
-.menu-dialog :deep(.el-dialog__header)::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 40px;
-  right: 40px;
-  height: 2px;
-  background: linear-gradient(90deg, #dc2626 0%, #f59e0b 50%, transparent 100%);
+  padding: 24px 32px;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border-bottom: none;
 }
 
 .role-dialog :deep(.el-dialog__title),
 .menu-dialog :deep(.el-dialog__title) {
   font-family: 'Playfair Display', serif;
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 700;
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.5px;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.role-dialog :deep(.el-dialog__headerbtn .el-dialog__close),
+.menu-dialog :deep(.el-dialog__headerbtn .el-dialog__close) {
+  color: #ffffff;
+  font-size: 20px;
+}
+
+.role-dialog :deep(.el-dialog__headerbtn .el-dialog__close):hover,
+.menu-dialog :deep(.el-dialog__headerbtn .el-dialog__close):hover {
+  color: #fef2f2;
 }
 
 .role-dialog :deep(.el-dialog__body),
 .menu-dialog :deep(.el-dialog__body) {
-  padding: 32px 40px 24px;
+  padding: 32px;
+  background: #fafafa;
 }
 
-/* 表单网格布局 */
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px 28px;
-  animation: formSlideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  align-items: start;
-}
-
-@keyframes formSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.form-grid-item {
-  margin-bottom: 0 !important;
+/* 表单行布局 */
+.form-row {
   display: flex;
-  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 20px;
 }
 
-.form-grid-item :deep(.el-form-item__content) {
-  margin-left: 0 !important;
-  width: 100%;
+.form-row:last-child {
+  margin-bottom: 0;
 }
 
-.form-grid-full {
-  grid-column: 1 / -1;
+.form-col {
+  flex: 1;
+  margin-bottom: 0 !important;
+}
+
+.form-col-full {
+  flex: 1;
+  margin-bottom: 0 !important;
 }
 
 .role-form :deep(.el-form-item__label) {
   font-family: 'Inter', sans-serif;
   font-weight: 600;
-  color: #374151;
-  font-size: 13px;
-  letter-spacing: 0.3px;
-  margin-bottom: 10px;
+  color: #1f2937;
+  font-size: 14px;
+  margin-bottom: 8px;
   padding: 0;
-  line-height: 1.4;
-  text-align: left;
-  width: 100% !important;
+  line-height: 1.5;
+}
+
+.role-form :deep(.el-form-item__content) {
+  line-height: normal;
 }
 
 .role-form :deep(.el-input__wrapper) {
-  border-radius: 10px;
-  box-shadow: 0 0 0 1px #e5e7eb inset;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px #d1d5db inset;
+  transition: all 0.2s ease;
   background: #ffffff;
-  padding: 10px 15px;
-  width: 100%;
 }
 
 .role-form :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px #d1d5db inset;
-  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px #9ca3af inset;
 }
 
 .role-form :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 2px #dc2626 inset, 0 4px 12px rgba(220, 38, 38, 0.15);
-  transform: translateY(-1px);
+  box-shadow: 0 0 0 2px #dc2626 inset;
 }
 
 .role-form :deep(.el-input__inner) {
   font-size: 14px;
-  color: #1f2937;
-  height: 22px;
-  line-height: 22px;
+  color: #111827;
 }
 
 .role-form :deep(.el-input__inner::placeholder) {
   color: #9ca3af;
-  font-size: 13px;
 }
 
 .role-form :deep(.el-textarea__inner) {
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  transition: all 0.2s ease;
   font-size: 14px;
   line-height: 1.6;
   background: #ffffff;
@@ -1190,19 +1176,16 @@ onMounted(() => {
 }
 
 .role-form :deep(.el-textarea__inner:hover) {
-  border-color: #d1d5db;
-  transform: translateY(-1px);
+  border-color: #9ca3af;
 }
 
 .role-form :deep(.el-textarea__inner:focus) {
   border-color: #dc2626;
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12), 0 4px 12px rgba(220, 38, 38, 0.08);
-  transform: translateY(-1px);
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 }
 
 .role-form :deep(.el-textarea__inner::placeholder) {
   color: #9ca3af;
-  font-size: 13px;
 }
 
 /* 排序输入框 */
@@ -1211,16 +1194,15 @@ onMounted(() => {
 }
 
 .sort-input :deep(.el-input__wrapper) {
-  padding: 10px 15px;
+  padding-right: 50px;
 }
 
 .sort-input :deep(.el-input-number__decrease),
 .sort-input :deep(.el-input-number__increase) {
   width: 32px;
   background: #f3f4f6;
-  border-radius: 6px;
-  transition: all 0.3s ease;
   border: none;
+  transition: all 0.2s ease;
 }
 
 .sort-input :deep(.el-input-number__decrease):hover,
@@ -1231,7 +1213,7 @@ onMounted(() => {
 
 .status-radio {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
 }
 
@@ -1241,99 +1223,66 @@ onMounted(() => {
 }
 
 .status-radio :deep(.el-radio.is-bordered) {
-  border-radius: 10px;
-  padding: 11px 16px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 10px 20px;
+  transition: all 0.2s ease;
+  border: 2px solid #d1d5db;
   background: #ffffff;
-  text-align: center;
+  display: flex;
   justify-content: center;
-  margin: 0;
+  align-items: center;
 }
 
 .status-radio :deep(.el-radio.is-bordered:hover) {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-  border-color: #d1d5db;
+  border-color: #9ca3af;
 }
 
 .status-radio :deep(.el-radio.is-bordered.is-checked) {
   border-color: #dc2626;
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.08) 0%, rgba(220, 38, 38, 0.02) 100%);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+  background: #fef2f2;
 }
 
 .status-radio :deep(.el-radio__label) {
   font-weight: 600;
-  font-size: 13px;
-  padding-left: 8px;
+  font-size: 14px;
 }
 
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 14px;
-  padding: 20px 40px 28px;
-  border-top: 2px solid #f3f4f6;
-  background: linear-gradient(to top, #fafafa 0%, #ffffff 100%);
+  gap: 12px;
+  padding: 20px 32px;
+  background: #f3f4f6;
+  border-top: 1px solid #e5e7eb;
 }
 
 .cancel-btn,
 .tree-btn {
-  border-radius: 12px;
-  padding: 11px 32px;
+  border-radius: 8px;
+  padding: 10px 24px;
   font-weight: 600;
-  font-size: 14px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 2px solid #e5e7eb;
+  border: 2px solid #d1d5db;
   color: #6b7280;
   background: #ffffff;
 }
 
 .cancel-btn:hover,
 .tree-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-  border-color: #d1d5db;
+  border-color: #9ca3af;
   color: #374151;
 }
 
 .submit-btn {
-  border-radius: 12px;
-  padding: 11px 32px;
+  border-radius: 8px;
+  padding: 10px 24px;
   font-weight: 600;
-  font-size: 14px;
   background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
   border: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
-  position: relative;
-  overflow: hidden;
-}
-
-.submit-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
-}
-
-.submit-btn:hover::before {
-  left: 100%;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
 }
 
 .submit-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.35);
-}
-
-.submit-btn:active {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
 }
 
 /* 菜单树容器 */
@@ -1397,13 +1346,13 @@ onMounted(() => {
     margin: 20px auto;
   }
 
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
+  .form-row {
+    flex-direction: column;
+    gap: 0;
   }
 
-  .form-grid-full {
-    grid-column: 1;
+  .form-col {
+    margin-bottom: 20px !important;
   }
 
   .role-dialog :deep(.el-dialog__header),
@@ -1411,8 +1360,8 @@ onMounted(() => {
   .menu-dialog :deep(.el-dialog__header),
   .menu-dialog :deep(.el-dialog__body),
   .dialog-footer {
-    padding-left: 24px;
-    padding-right: 24px;
+    padding-left: 20px;
+    padding-right: 20px;
   }
 }
 </style>
