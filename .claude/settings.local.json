@@ -1,7 +1,14 @@
 {
   "permissions": {
     "allow": [
-      "Bash(*)",
+      "Bash(curl:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(touch:*)",
       "Edit(*)",
       "Write(*)",
       "Read(*)",
@@ -10,7 +17,10 @@
       "mcp__context7__query-docs",
       "mcp__memory__create_entities",
       "mcp__memory__create_relations",
-      "mcp__memory__read_graph"
+      "mcp__memory__read_graph",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(jps:*)"
     ]
   }
 }
