@@ -126,6 +126,36 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_role_menu ON sys_role_menu(role_id, menu_i
 CREATE INDEX IF NOT EXISTS idx_rm_role_id ON sys_role_menu(role_id);
 CREATE INDEX IF NOT EXISTS idx_rm_menu_id ON sys_role_menu(menu_id);
 
+-- 岗位表
+CREATE TABLE IF NOT EXISTS sys_position (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    position_name VARCHAR(50) NOT NULL,
+    position_code VARCHAR(50) NOT NULL UNIQUE,
+    status INTEGER DEFAULT 1,
+    sort INTEGER DEFAULT 0,
+    remark VARCHAR(500),
+    deleted INTEGER DEFAULT 0,
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_by VARCHAR(50),
+    update_by VARCHAR(50)
+);
+
+CREATE INDEX IF NOT EXISTS idx_position_code ON sys_position(position_code);
+CREATE INDEX IF NOT EXISTS idx_position_status ON sys_position(status);
+
+-- 用户-岗位关联表
+CREATE TABLE IF NOT EXISTS sys_user_position (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    position_id INTEGER NOT NULL,
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_user_position ON sys_user_position(user_id, position_id);
+CREATE INDEX IF NOT EXISTS idx_up_user_id ON sys_user_position(user_id);
+CREATE INDEX IF NOT EXISTS idx_up_position_id ON sys_user_position(position_id);
+
 -- 插入测试数据（密码为 123456 的 BCrypt 加密）
 INSERT OR IGNORE INTO sys_user (username, password, nickname, avatar, email, phone, status, deleted, remark)
 VALUES
@@ -150,17 +180,27 @@ INSERT OR IGNORE INTO sys_menu (id, parent_id, menu_name, menu_type, path, compo
 (8, 4, '删除用户', 'F', NULL, NULL, NULL, 4, 'system:user:delete'),
 (9, 4, '修改状态', 'F', NULL, NULL, NULL, 5, 'system:user:status'),
 (10, 4, '分配角色', 'F', NULL, NULL, NULL, 6, 'system:user:role'),
+(22, 4, '分配岗位', 'F', NULL, NULL, NULL, 7, 'system:user:position'),
 -- 角色管理菜单及权限
 (11, 3, '角色管理', 'C', '/system/roles', 'system/RoleManagement', 'UserFilled', 2, 'system:role:view'),
 (12, 11, '查询角色', 'F', NULL, NULL, NULL, 1, 'system:role:query'),
 (13, 11, '新增角色', 'F', NULL, NULL, NULL, 2, 'system:role:add'),
 (14, 11, '编辑角色', 'F', NULL, NULL, NULL, 3, 'system:role:edit'),
 (15, 11, '删除角色', 'F', NULL, NULL, NULL, 4, 'system:role:delete'),
-(16, 11, '分配权限', 'F', NULL, NULL, NULL, 5, 'system:role:assign');
+(16, 11, '分配权限', 'F', NULL, NULL, NULL, 5, 'system:role:assign'),
+-- 岗位管理菜单及权限
+(17, 3, '岗位管理', 'C', '/system/positions', 'system/PositionManagement', 'Briefcase', 3, 'system:position:view'),
+(18, 17, '查询岗位', 'F', NULL, NULL, NULL, 1, 'system:position:query'),
+(19, 17, '新增岗位', 'F', NULL, NULL, NULL, 2, 'system:position:add'),
+(20, 17, '编辑岗位', 'F', NULL, NULL, NULL, 3, 'system:position:edit'),
+(21, 17, '删除岗位', 'F', NULL, NULL, NULL, 4, 'system:position:delete');
 
 -- 插入 root 角色（系统角色，不可删除）
 INSERT OR IGNORE INTO sys_role (id, role_name, role_key, is_system, status, sort, remark) VALUES
 (1, '超级管理员', 'root', 1, 1, 1, '拥有所有权限，不可删除');
+
+-- 删除 root 角色的旧权限关联
+DELETE FROM sys_role_menu WHERE role_id = 1;
 
 -- root 角色关联所有菜单
 INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id)

@@ -75,4 +75,20 @@ public interface IUserManagementService {
      * @param roleIds 角色ID列表
      */
     void assignRoles(Long userId, java.util.List<Long> roleIds);
+
+    /**
+     * 获取用户的岗位列表
+     *
+     * @param userId 用户ID
+     * @return 岗位ID列表
+     */
+    java.util.List<Long> getUserPositions(Long userId);
+
+    /**
+     * 分配岗位给用户（覆盖式更新）
+     *
+     * @param userId 用户ID
+     * @param positionIds 岗位ID列表
+     */
+    void assignPositions(Long userId, java.util.List<Long> positionIds);
 }

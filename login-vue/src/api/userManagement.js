@@ -113,3 +113,27 @@ export function assignRoles(id, roleIds) {
     data: { roleIds }
   })
 }
+
+/**
+ * 获取用户的岗位列表
+ * @param {number} id - 用户ID
+ */
+export function getUserPositions(id) {
+  return request({
+    url: `/admin/users/${id}/positions`,
+    method: 'get'
+  })
+}
+
+/**
+ * 分配岗位给用户
+ * @param {number} id - 用户ID
+ * @param {Array<number>} positionIds - 岗位ID列表
+ */
+export function assignPositions(id, positionIds) {
+  return request({
+    url: `/admin/users/${id}/positions`,
+    method: 'put',
+    data: { positionIds }
+  })
+}

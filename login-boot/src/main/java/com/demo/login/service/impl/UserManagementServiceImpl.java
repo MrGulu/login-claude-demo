@@ -8,11 +8,15 @@ import com.demo.login.common.utils.PasswordUtil;
 import com.demo.login.dto.CreateUserDTO;
 import com.demo.login.dto.UpdateUserDTO;
 import com.demo.login.dto.UserQueryDTO;
+import com.demo.login.entity.Position;
 import com.demo.login.entity.Role;
 import com.demo.login.entity.User;
+import com.demo.login.entity.UserPosition;
 import com.demo.login.entity.UserRole;
+import com.demo.login.mapper.PositionMapper;
 import com.demo.login.mapper.RoleMapper;
 import com.demo.login.mapper.UserMapper;
+import com.demo.login.mapper.UserPositionMapper;
 import com.demo.login.mapper.UserRoleMapper;
 import com.demo.login.service.IUserManagementService;
 import com.demo.login.vo.PageResult;
@@ -45,6 +49,12 @@ public class UserManagementServiceImpl implements IUserManagementService {
 
     @Autowired
     private RoleMapper roleMapper;
+
+    @Autowired
+    private UserPositionMapper userPositionMapper;
+
+    @Autowired
+    private PositionMapper positionMapper;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -280,6 +290,41 @@ public class UserManagementServiceImpl implements IUserManagementService {
         });
 
         log.info("分配角色成功，用户ID: {}, 角色数量: {}", userId, roleIds.size());
+    }
+
+    @Override
+    public List<Long> getUserPositions(Long userId) {
+        LambdaQueryWrapper<UserPosition> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(UserPosition::getUserId, userId);
+        List<UserPosition> userPositions = userPositionMapper.selectList(wrapper);
+        return userPositions.stream()
+                .map(UserPosition::getPositionId)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void assignPositions(Long userId, List<Long> positionIds) {
+        // 校验用户是否存在
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+
+        // 删除旧的岗位关联
+        LambdaQueryWrapper<UserPosition> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(UserPosition::getUserId, userId);
+        userPositionMapper.delete(wrapper);
+
+        // 批量插入新的岗位关联
+        positionIds.forEach(positionId -> {
+            UserPosition userPosition = new UserPosition();
+            userPosition.setUserId(userId);
+            userPosition.setPositionId(positionId);
+            userPositionMapper.insert(userPosition);
+        });
+
+        log.info("分配岗位成功，用户ID: {}, 岗位数量: {}", userId, positionIds.size());
     }
 
     /**

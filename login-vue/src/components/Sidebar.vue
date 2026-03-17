@@ -76,7 +76,8 @@ import {
   User,
   UserFilled,
   Setting,
-  SwitchButton
+  SwitchButton,
+  Briefcase
 } from '@element-plus/icons-vue'
 import { getUserMenus } from '@/api/menu'
 
@@ -100,7 +101,8 @@ const iconMap = {
   HomeFilled,
   User,
   UserFilled,
-  Setting
+  Setting,
+  Briefcase
 }
 
 const getIcon = (iconName) => {

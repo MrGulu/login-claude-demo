@@ -2,6 +2,7 @@ package com.demo.login.controller;
 
 import com.demo.login.annotation.RequirePermission;
 import com.demo.login.common.result.Result;
+import com.demo.login.dto.AssignPositionDTO;
 import com.demo.login.dto.AssignRoleDTO;
 import com.demo.login.dto.CreateUserDTO;
 import com.demo.login.dto.UpdateUserDTO;
@@ -120,6 +121,30 @@ public class UserManagementController {
                                      @Valid @RequestBody AssignRoleDTO dto) {
         dto.setUserId(id);
         userManagementService.assignRoles(dto.getUserId(), dto.getRoleIds());
+        return Result.success();
+    }
+
+    /**
+     * 获取用户的岗位列表
+     * GET /api/admin/users/{id}/positions
+     */
+    @GetMapping("/{id}/positions")
+    @RequirePermission("system:user:query")
+    public Result<List<Long>> getUserPositions(@PathVariable Long id) {
+        List<Long> positionIds = userManagementService.getUserPositions(id);
+        return Result.success(positionIds);
+    }
+
+    /**
+     * 分配岗位给用户
+     * PUT /api/admin/users/{id}/positions
+     */
+    @PutMapping("/{id}/positions")
+    @RequirePermission("system:user:position")
+    public Result<Void> assignPositions(@PathVariable Long id,
+                                      @Valid @RequestBody AssignPositionDTO dto) {
+        dto.setUserId(id);
+        userManagementService.assignPositions(dto.getUserId(), dto.getPositionIds());
         return Result.success();
     }
 }
