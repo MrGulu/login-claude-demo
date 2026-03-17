@@ -4,6 +4,7 @@ import HomeView from '../views/HomeView.vue'
 import ProfileView from '../views/ProfileView.vue'
 import UserManagement from '../views/system/UserManagement.vue'
 import RoleManagement from '../views/system/RoleManagement.vue'
+import PositionManagement from '../views/system/PositionManagement.vue'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
 
 const routes = [
@@ -43,6 +44,12 @@ const routes = [
         path: '/system/roles',
         name: 'RoleManagement',
         component: RoleManagement,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/system/positions',
+        name: 'PositionManagement',
+        component: PositionManagement,
         meta: { requiresAuth: true }
       }
     ]
