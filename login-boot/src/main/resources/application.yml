@@ -12,14 +12,14 @@ spring:
   # 数据源配置 - 使用SQLite
   datasource:
     driver-class-name: org.sqlite.JDBC
-    url: jdbc:sqlite:./data/login.db
+    url: jdbc:sqlite:../data/login.db
     # SQLite不需要用户名密码
 
   # 数据库初始化配置
   sql:
     init:
       mode: always
-      schema-locations: classpath:db/schema.sql
+      schema-locations: file:../data/schema.sql
       encoding: utf-8
 
   # Redis配置 (注释掉，使用内存存储替代)
