@@ -1,0 +1,6 @@
+django==4.2.0
+djangorestframework
+djangorestframework-simplejwt
+Pillow
+django-cors-headers
+bcrypt
