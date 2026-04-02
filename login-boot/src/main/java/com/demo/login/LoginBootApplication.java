@@ -19,7 +19,7 @@ public class LoginBootApplication {
         System.out.println("========================================");
         System.out.println("登录系统启动成功！");
         System.out.println("访问地址: http://localhost:8080");
-        System.out.println("数据库: SQLite (./data/login.db)");
+        System.out.println("数据库: SQLite (../data/login.db)");
         System.out.println("========================================");
     }
 }
