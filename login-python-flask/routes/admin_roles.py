@@ -12,7 +12,7 @@ admin_roles_bp = Blueprint('admin_roles', __name__, url_prefix='/api/admin/roles
 """
 def role_to_dict(r):
     return {
-        'id': r.id,
+        'id': str(r.id),
         'roleName': r.role_name,
         'roleKey': r.role_key,
         'isSystem': r.is_system,
@@ -28,8 +28,8 @@ def role_to_dict(r):
 @admin_roles_bp.route('', methods=['GET'])
 @login_required
 def get_roles():
-    page_num = request.args.get('pageNum', 1, type=int)
-    page_size = request.args.get('pageSize', 10, type=int)
+    page_num = request.args.get('page', 1, type=int)
+    page_size = request.args.get('size', 10, type=int)
     role_name = request.args.get('roleName', '')
     role_key = request.args.get('roleKey', '')
     status = request.args.get('status', type=int)
@@ -46,7 +46,7 @@ def get_roles():
     items = [role_to_dict(r) for r in pagination.items]
     return success({
         "total": pagination.total,
-        "rows": items
+        "records": items
     })
 
 """
@@ -132,7 +132,7 @@ def delete_role(id):
 @login_required
 def get_role_menus(id):
     rm = RoleMenu.query.filter_by(role_id=id).all()
-    return success([m.menu_id for m in rm])
+    return success([str(m.menu_id) for m in rm])
 
 """
 分配角色菜单权限

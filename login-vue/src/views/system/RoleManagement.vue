@@ -362,7 +362,7 @@ const isCheckedAll = ref(false)
 // 权限检查函数
 const hasPermission = (permission) => {
   const userPerms = JSON.parse(localStorage.getItem('userPerms') || '[]')
-  return userPerms.includes(permission)
+  return userPerms.includes('*:*:*') || userPerms.includes(permission)
 }
 
 // 加载角色列表

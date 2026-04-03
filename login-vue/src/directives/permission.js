@@ -7,13 +7,9 @@ export default {
     const { value } = binding
     const userPerms = JSON.parse(localStorage.getItem('userPerms') || '[]')
 
-    console.log('权限检查:', {
-      需要的权限: value,
-      用户权限列表: userPerms,
-      是否有权限: userPerms.includes(value)
-    })
+    const hasPermission = userPerms.includes('*:*:*') || userPerms.includes(value)
 
-    if (value && !userPerms.includes(value)) {
+    if (value && !hasPermission) {
       el.parentNode?.removeChild(el)
     }
   }

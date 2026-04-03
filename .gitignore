@@ -95,3 +95,34 @@ hs_err_pid*
 # Other
 *.pid
 bash.exe.stackdump
+
+#######################PYTHON
+# Python overrides & compiled
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Environments
+venv/
+env/
+.env
+.venv/
+env.bak/
+venv.bak/
+
+# Django stuff
+*.sqlite3
+db.sqlite3
+*.log
+local_settings.py
+
+# Flask stuff
+instance/
+.webassets-cache
+
+# FastAPI/Pytest/MyPy
+.pytest_cache/
+.mypy_cache/
+.tox/

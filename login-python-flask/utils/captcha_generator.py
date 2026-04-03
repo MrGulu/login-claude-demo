@@ -3,20 +3,11 @@ import io
 import base64
 from PIL import Image, ImageDraw, ImageFont
 
-def generate_math_captcha():
-    # Generate simple math equation
-    num1 = random.randint(1, 10)
-    num2 = random.randint(1, 10)
-    operator = random.choice(['+', '-'])
-    if operator == '+':
-        result = num1 + num2
-    else:
-        # Ensure positive result
-        if num1 < num2:
-            num1, num2 = num2, num1
-        result = num1 - num2
-    
-    equation = f"{num1} {operator} {num2} = ?"
+def generate_captcha():
+    # Use 4-char alphanumeric to match Java original behavior and frontend requirement
+    chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    code = "".join(random.choice(chars) for _ in range(4))
+    result = code
     
     # Create image
     width, height = 120, 40
@@ -29,14 +20,15 @@ def generate_math_captcha():
     except IOError:
         font = ImageFont.load_default()
         
-    # Draw equation
-    text_bbox = draw.textbbox((0, 0), equation, font=font)
+    # Draw text
+    text_bbox = draw.textbbox((0, 0), code, font=font)
     text_width = text_bbox[2] - text_bbox[0]
     text_height = text_bbox[3] - text_bbox[1]
     
+    # Add some spacing to text
     x = (width - text_width) / 2
     y = (height - text_height) / 2
-    draw.text((x, y), equation, fill=(0, 0, 0), font=font)
+    draw.text((x, y), code, fill=(0, 0, 0), font=font)
     
     # Draw noise
     for _ in range(50):

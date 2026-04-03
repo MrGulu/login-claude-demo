@@ -12,7 +12,7 @@ admin_positions_bp = Blueprint('admin_positions', __name__, url_prefix='/api/adm
 """
 def pos_to_dict(p):
     return {
-        'id': p.id,
+        'id': str(p.id),
         'positionName': p.position_name,
         'positionCode': p.position_code,
         'status': p.status,
@@ -27,8 +27,8 @@ def pos_to_dict(p):
 @admin_positions_bp.route('', methods=['GET'])
 @login_required
 def get_positions():
-    page_num = request.args.get('pageNum', 1, type=int)
-    page_size = request.args.get('pageSize', 10, type=int)
+    page_num = request.args.get('page', 1, type=int)
+    page_size = request.args.get('size', 10, type=int)
     position_name = request.args.get('positionName', '')
     position_code = request.args.get('positionCode', '')
     status = request.args.get('status', type=int)
@@ -45,7 +45,7 @@ def get_positions():
     items = [pos_to_dict(p) for p in pagination.items]
     return success({
         "total": pagination.total,
-        "rows": items
+        "records": items
     })
 
 """

@@ -27,7 +27,7 @@
    ```
 
 3. **数据库连接绑定**
-   Django 并未使用 `python manage.py migrate` 传统形式创建此库，在原 Spring 逻辑实现中我们已在此目录下创建了一组直接映射自 `schema.sql` 的 `data/login.db` 并在 manage.py 的 `main()` 中加入了自动检查并执行初始化脚本逻辑。
+   Django 并未使用 `python manage.py migrate` 传统形式创建此库，在原 Spring 逻辑实现中我们已在此目录下创建了一组直接映射自 `../data/schema.sql` 的 `../data/login.db` 并在 manage.py 的 `main()` 中加入了自动检查并执行初始化脚本逻辑。
 
 ## 启动调试
 

@@ -28,7 +28,7 @@
    ```
 
 3. **数据库初始化**
-   本项目底层使用 SQLite。首次启动入口 `app.py` 时，会自动读取 `./data/schema.sql` 并生成 `../data/login.db` 库。这与原有 Spring Boot 行为一致。
+   本项目底层使用 SQLite。首次启动入口 `app.py` 时，会自动读取 `../data/schema.sql` 并生成 `../data/login.db` 库。这与原有 Spring Boot 行为一致。
 
 ## 运行项目
 

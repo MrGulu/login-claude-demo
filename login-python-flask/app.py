@@ -45,6 +45,7 @@ def create_app():
     from routes.admin_users import admin_users_bp
     from routes.admin_roles import admin_roles_bp
     from routes.admin_positions import admin_positions_bp
+    from routes.password_reset import password_reset_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(captcha_bp)
@@ -53,6 +54,7 @@ def create_app():
     app.register_blueprint(admin_users_bp)
     app.register_blueprint(admin_roles_bp)
     app.register_blueprint(admin_positions_bp)
+    app.register_blueprint(password_reset_bp)
 
     # Global exception handler
     @app.errorhandler(Exception)

@@ -2,6 +2,7 @@ from flask import Blueprint, request
 from utils.response import success, error
 from utils.decorators import login_required
 from utils.security import hash_password, verify_password
+from utils.cache import cache
 from extensions import db
 from models.models import User
 
@@ -24,7 +25,16 @@ def update_profile():
     user.remark = data.get('remark', user.remark)
     
     db.session.commit()
-    return success(message="用户信息已更新")
+    
+    user_info = {
+        "id": str(user.id),
+        "username": user.username,
+        "nickname": user.nickname,
+        "avatar": user.avatar,
+        "email": user.email,
+        "phone": user.phone
+    }
+    return success(user_info, "更新成功")
     
 """
 更新用户头像
@@ -44,7 +54,7 @@ def update_avatar():
          
     user.avatar = avatar
     db.session.commit()
-    return success(message="头像更新成功")
+    return success({"avatar": avatar}, "头像上传成功")
 
 """
 修改当前用户的登录密码
@@ -55,9 +65,23 @@ def update_password():
     data = request.get_json() or {}
     old_pwd = data.get('oldPassword')
     new_pwd = data.get('newPassword')
+    captcha = data.get('captcha')
+    captcha_key = data.get('captchaKey')
     
     if not old_pwd or not new_pwd:
          return error(400, "请提供旧密码和新密码")
+         
+    # Check captcha
+    if not captcha_key or not captcha:
+         return error(400, "验证码不能为空")
+         
+    cached_code = cache.get(f"captcha_codes:{captcha_key}")
+    if not cached_code:
+        return error(400, "验证码错误或已过期")
+    if str(captcha).lower() != str(cached_code).lower():
+        return error(400, "验证码错误或已过期")
+    # Clear used captcha
+    cache.delete(f"captcha_codes:{captcha_key}")
          
     user = User.query.get(request.user_id)
     if not user:
@@ -68,4 +92,4 @@ def update_password():
          
     user.password = hash_password(new_pwd)
     db.session.commit()
-    return success(message="密码更改成功")
+    return success(None, "密码修改成功")

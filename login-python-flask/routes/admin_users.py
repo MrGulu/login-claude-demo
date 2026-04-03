@@ -32,7 +32,7 @@ def get_users():
     items = [u.to_dict() for u in pagination.items]
     return success({
         "total": pagination.total,
-        "rows": items
+        "list": items
     })
 
 """
@@ -138,7 +138,7 @@ def update_user_status(id):
 @login_required
 def get_user_roles(id):
     ur = UserRole.query.filter_by(user_id=id).all()
-    return success([r.role_id for r in ur])
+    return success([str(r.role_id) for r in ur])
 
 """
 更新用户已分配角色
@@ -164,7 +164,7 @@ def update_user_roles(id):
 @login_required
 def get_user_positions(id):
     up = UserPosition.query.filter_by(user_id=id).all()
-    return success([p.position_id for p in up])
+    return success([str(p.position_id) for p in up])
 
 """
 更新用户已分配岗位
