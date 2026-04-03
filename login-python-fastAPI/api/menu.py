@@ -19,8 +19,8 @@ def build_menu_tree(menus, parent_id=0):
         if m.parent_id == parent_id:
             children = build_menu_tree(menus, m.id)
             node = {
-                'id': m.id,
-                'parentId': m.parent_id,
+                'id': str(m.id),
+                'parentId': str(m.parent_id),
                 'menuName': m.menu_name,
                 'menuType': m.menu_type,
                 'path': m.path,

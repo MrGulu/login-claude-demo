@@ -13,7 +13,7 @@ router = APIRouter(prefix="/admin/positions", tags=["Admin Positions"])
 """
 def pos_to_dict(p):
     return {
-        'id': p.id, 'positionName': p.position_name, 'positionCode': p.position_code,
+        'id': str(p.id), 'positionName': p.position_name, 'positionCode': p.position_code,
         'status': p.status, 'sort': p.sort, 'remark': p.remark, 
         'createTime': p.create_time.strftime('%Y-%m-%d %H:%M:%S') if p.create_time else None
     }
@@ -40,7 +40,7 @@ def get_positions(
     positions = query.order_by(Position.sort.asc()).offset((pageNum - 1) * pageSize).limit(pageSize).all()
     items = [pos_to_dict(p) for p in positions]
         
-    return success({"total": total, "rows": items})
+    return success({"total": total, "records": items})
 
 """
 获取岗位详情

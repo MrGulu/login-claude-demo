@@ -11,7 +11,7 @@ from datetime import datetime
 """
 def role_to_dict(r):
     return {
-        'id': r.id, 'roleName': r.role_name, 'roleKey': r.role_key,
+        'id': str(r.id), 'roleName': r.role_name, 'roleKey': r.role_key,
         'isSystem': r.is_system, 'status': r.status, 'sort': r.sort,
         'remark': r.remark, 
         'createTime': r.create_time.strftime('%Y-%m-%d %H:%M:%S') if r.create_time else None
@@ -40,7 +40,7 @@ def roles_list(request):
         roles = query.order_by('sort')[(page_num - 1) * page_size : page_num * page_size]
         items = [role_to_dict(r) for r in roles]
             
-        return success({"total": total, "rows": items})
+        return success({"total": total, "records": items})
     
     elif request.method == "POST":
         data = json.loads(request.body)
@@ -103,7 +103,7 @@ def role_menus(request, role_id):
     
     if request.method == "GET":
         menus = RoleMenu.objects.filter(role_id=role_id)
-        return success([m.menu_id for m in menus])
+        return success([str(m.menu_id) for m in menus])
         
     elif request.method == "PUT":
         if role.role_key == 'root':

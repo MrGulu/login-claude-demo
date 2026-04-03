@@ -16,7 +16,7 @@ def role_to_dict(r):
     角色模型转字典
     """
     return {
-        'id': r.id, 'roleName': r.role_name, 'roleKey': r.role_key,
+        'id': str(r.id), 'roleName': r.role_name, 'roleKey': r.role_key,
         'isSystem': r.is_system, 'status': r.status, 'sort': r.sort,
         'remark': r.remark, 
         'createTime': r.create_time.strftime('%Y-%m-%d %H:%M:%S') if r.create_time else None
@@ -44,7 +44,7 @@ def get_roles(
     roles = query.order_by(Role.sort.asc()).offset((pageNum - 1) * pageSize).limit(pageSize).all()
     items = [role_to_dict(r) for r in roles]
         
-    return success({"total": total, "rows": items})
+    return success({"total": total, "records": items})
 
 """
 获取角色详情
@@ -115,7 +115,7 @@ def delete_role(id: int, current_user: User = Depends(get_current_user), db: Ses
 @router.get("/{id}/menus", response_model=ResponseModel)
 def get_role_menus(id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     menus = db.query(RoleMenu).filter(RoleMenu.role_id == id).all()
-    return success([m.menu_id for m in menus])
+    return success([str(m.menu_id) for m in menus])
 
 """
 更新角色的权限菜单分配

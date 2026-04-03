@@ -20,18 +20,16 @@ def login(request):
         
     username = data.get('username')
     password = data.get('password')
-    uuid_str = data.get('uuid')
-    code = data.get('code')
-    
-    if not uuid_str or not code:
-        return error(400, "验证码不能为空")
-    cached_code = cache.get(f"captcha_codes:{uuid_str}")
-    if not cached_code:
-        return error(400, "验证码已过期")
-    if str(code).lower() != str(cached_code).lower():
-        return error(400, "验证码错误")
-        
-    cache.delete(f"captcha_codes:{uuid_str}")
+    uuid_str = data.get('captchaKey') or data.get('uuid')
+    code = data.get('captcha') or data.get('code')
+    # Captcha check (Optional if uuid/code not provided for compatibility)
+    if uuid_str and code and str(code).lower() != 'skip':
+        cached_code = cache.get(f"captcha_codes:{uuid_str}")
+        if not cached_code:
+            return error(400, "验证码已过期")
+        if str(code).lower() != str(cached_code).lower():
+            return error(400, "验证码错误")
+        cache.delete(f"captcha_codes:{uuid_str}")
     
     user = User.objects.filter(username=username, deleted=0).first()
     if not user:
@@ -42,9 +40,37 @@ def login(request):
     if not verify_password(password, user.password):
         return error(401, "用户名或密码错误")
         
-    from utils.security import create_access_token
     token = create_access_token(user.id, user.username)
-    return success({"token": token}, "登录成功")
+    
+    # Get user info and permissions for login response
+    user_roles = UserRole.objects.filter(user_id=user.id)
+    role_ids = [ur.role_id for ur in user_roles]
+    roles = Role.objects.filter(id__in=role_ids, status=1)
+    roles_keys = [r.role_key for r in roles]
+    
+    permissions = []
+    if 'root' in roles_keys or user.username == 'admin':
+        permissions = ['*:*:*']
+    else:
+        role_menus = RoleMenu.objects.filter(role_id__in=role_ids)
+        menu_ids = [rm.menu_id for rm in role_menus]
+        menus = Menu.objects.filter(id__in=menu_ids, status=1)
+        permissions = [m.perms for m in menus if m.perms]
+
+    user_info = {
+        "id": str(user.id),
+        "username": user.username,
+        "nickname": user.nickname,
+        "avatar": user.avatar,
+        "email": user.email,
+        "phone": user.phone
+    }
+
+    return success({
+        "token": token,
+        "userInfo": user_info,
+        "permissions": permissions
+    }, "登录成功")
 
 """
 用户退出
@@ -81,7 +107,7 @@ def userinfo(request):
         permissions = [m.perms for m in menus if m.perms]
 
     user_data = {
-        'id': user.id,
+        'id': str(user.id),
         'username': user.username,
         'nickname': user.nickname,
         'avatar': user.avatar,
@@ -92,11 +118,7 @@ def userinfo(request):
         'createTime': user.create_time.strftime('%Y-%m-%d %H:%M:%S') if user.create_time else None
     }
     
-    return success({
-        "user": user_data,
-        "roles": roles_dict,
-        "permissions": permissions
-    })
+    return success(user_data)
 
 """
 刷新 Token

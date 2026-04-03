@@ -42,13 +42,13 @@ def get_users(
     items = []
     for u in users:
         items.append({
-            'id': u.id, 'username': u.username, 'nickname': u.nickname,
+            'id': str(u.id), 'username': u.username, 'nickname': u.nickname,
             'avatar': u.avatar, 'email': u.email, 'phone': u.phone,
             'status': u.status, 'remark': u.remark,
             'createTime': u.create_time.strftime('%Y-%m-%d %H:%M:%S') if u.create_time else None
         })
         
-    return success({"total": total, "rows": items})
+    return success({"total": total, "list": items})
 
 """
 根据 ID 获取特定用户信息
@@ -59,7 +59,7 @@ def get_user(id: int, current_user: User = Depends(get_current_user), db: Sessio
     if not u:
         return error(404, "User not found")
     return success({
-        'id': u.id, 'username': u.username, 'nickname': u.nickname,
+        'id': str(u.id), 'username': u.username, 'nickname': u.nickname,
         'avatar': u.avatar, 'email': u.email, 'phone': u.phone,
         'status': u.status, 'remark': u.remark,
         'createTime': u.create_time.strftime('%Y-%m-%d %H:%M:%S') if u.create_time else None
@@ -147,7 +147,7 @@ def update_user_status(id: int, data: dict = Body(...), current_user: User = Dep
 @router.get("/{id}/roles", response_model=ResponseModel)
 def get_user_roles(id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     roles = db.query(UserRole).filter(UserRole.user_id == id).all()
-    return success([r.role_id for r in roles])
+    return success([str(r.role_id) for r in roles])
 
 """
 重新分配用户的角色
@@ -168,7 +168,7 @@ def update_user_roles(id: int, data: dict = Body(...), current_user: User = Depe
 @router.get("/{id}/positions", response_model=ResponseModel)
 def get_user_positions(id: int, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     positions = db.query(UserPosition).filter(UserPosition.user_id == id).all()
-    return success([p.position_id for p in positions])
+    return success([str(p.position_id) for p in positions])
 
 """
 重新分配用户的岗位

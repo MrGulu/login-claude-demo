@@ -11,7 +11,7 @@ from datetime import datetime
 """
 def pos_to_dict(p):
     return {
-        'id': p.id, 'positionName': p.position_name, 'positionCode': p.position_code,
+        'id': str(p.id), 'positionName': p.position_name, 'positionCode': p.position_code,
         'status': p.status, 'sort': p.sort, 'remark': p.remark, 
         'createTime': p.create_time.strftime('%Y-%m-%d %H:%M:%S') if p.create_time else None
     }
@@ -39,7 +39,7 @@ def positions_list(request):
         positions = query.order_by('sort')[(page_num - 1) * page_size : page_num * page_size]
         items = [pos_to_dict(p) for p in positions]
             
-        return success({"total": total, "rows": items})
+        return success({"total": total, "records": items})
     
     elif request.method == "POST":
         data = json.loads(request.body)

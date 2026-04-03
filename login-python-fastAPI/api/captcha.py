@@ -18,8 +18,8 @@ def generate():
         cache.set(f"captcha_codes:{uuid_str}", str(result), timeout=300)
         
         return success({
-            "uuid": uuid_str,
-            "img": img_base64
+            "captchaKey": uuid_str,
+            "captchaImage": img_base64
         })
     except Exception as e:
         return error(500, f"验证码生成失败: {str(e)}")

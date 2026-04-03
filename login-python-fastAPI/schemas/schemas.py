@@ -10,12 +10,16 @@ class ResponseModel(BaseModel):
 class LoginRequest(BaseModel):
     username: str
     password: str
-    uuid: str
-    code: str
+    remember: Optional[bool] = False
+    captchaKey: Optional[str] = None
+    captcha: Optional[str] = None
+    # For backward compatibility
+    uuid: Optional[str] = None
+    code: Optional[str] = None
 
 class CaptchaResponse(BaseModel):
-    img: str
-    uuid: str
+    captchaImage: str
+    captchaKey: str
 
 class PasswordUpdate(BaseModel):
     oldPassword: str

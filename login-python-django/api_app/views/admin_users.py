@@ -32,13 +32,13 @@ def users_list(request):
         items = []
         for u in users:
             items.append({
-                'id': u.id, 'username': u.username, 'nickname': u.nickname,
+                'id': str(u.id), 'username': u.username, 'nickname': u.nickname,
                 'avatar': u.avatar, 'email': u.email, 'phone': u.phone,
                 'status': u.status, 'remark': u.remark,
                 'createTime': u.create_time.strftime('%Y-%m-%d %H:%M:%S') if u.create_time else None
             })
             
-        return success({"total": total, "rows": items})
+        return success({"total": total, "list": items})
     
     elif request.method == "POST":
         data = json.loads(request.body)
@@ -71,7 +71,7 @@ def user_detail(request, user_id):
         
     if request.method == "GET":
         return success({
-            'id': user.id, 'username': user.username, 'nickname': user.nickname,
+            'id': str(user.id), 'username': user.username, 'nickname': user.nickname,
             'avatar': user.avatar, 'email': user.email, 'phone': user.phone,
             'status': user.status, 'remark': user.remark,
             'createTime': user.create_time.strftime('%Y-%m-%d %H:%M:%S') if user.create_time else None
@@ -122,7 +122,7 @@ def user_status(request, user_id):
 def user_roles(request, user_id):
     if request.method == "GET":
         roles = UserRole.objects.filter(user_id=user_id)
-        return success([r.role_id for r in roles])
+        return success([str(r.role_id) for r in roles])
     elif request.method == "PUT":
         if user_id == 1: return error(400, "不能修改超级管理员的角色分配")
         role_ids = json.loads(request.body).get('roleIds', [])
@@ -140,7 +140,7 @@ def user_roles(request, user_id):
 def user_positions(request, user_id):
     if request.method == "GET":
         positions = UserPosition.objects.filter(user_id=user_id)
-        return success([p.position_id for p in positions])
+        return success([str(p.position_id) for p in positions])
     elif request.method == "PUT":
         position_ids = json.loads(request.body).get('positionIds', [])
         UserPosition.objects.filter(user_id=user_id).delete()
