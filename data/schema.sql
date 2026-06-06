@@ -209,3 +209,66 @@ SELECT 1, id FROM sys_menu WHERE deleted = 0;
 -- admin 用户绑定 root 角色
 INSERT OR IGNORE INTO sys_user_role (user_id, role_id)
 SELECT id, 1 FROM sys_user WHERE username = 'admin';
+
+-- ==========================================
+-- 公告管理模块初始化
+-- ==========================================
+
+-- 1. 创建公告表
+CREATE TABLE IF NOT EXISTS sys_notice (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title VARCHAR(200) NOT NULL,
+    content TEXT NOT NULL,
+    author VARCHAR(50) NOT NULL,
+    status INTEGER DEFAULT 1,
+    deleted INTEGER DEFAULT 0,
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_by VARCHAR(50),
+    update_by VARCHAR(50),
+    remark VARCHAR(500)
+);
+
+-- 2. 插入菜单与按钮权限数据
+INSERT OR IGNORE INTO sys_menu (id, parent_id, menu_name, menu_type, path, component, icon, sort, perms)
+VALUES (23, 3, '公告管理', 'C', '/system/notices', 'system/NoticeManagement', 'Notification', 4, 'system:notice:view');
+
+INSERT OR IGNORE INTO sys_menu (id, parent_id, menu_name, menu_type, icon, sort, perms)
+VALUES 
+(24, 23, '查询公告', 'F', NULL, 1, 'system:notice:query'),
+(25, 23, '新增公告', 'F', NULL, 2, 'system:notice:add'),
+(26, 23, '编辑公告', 'F', NULL, 3, 'system:notice:edit'),
+(27, 23, '删除公告', 'F', NULL, 4, 'system:notice:delete');
+
+-- 3. 关联 root 角色权限
+INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 23);
+INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 24);
+INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 25);
+INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 26);
+INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 27);
+
+-- ==========================================
+-- 登录日志菜单与已读关联表初始化
+-- ==========================================
+
+-- 1. 创建公告已读状态关系表
+CREATE TABLE IF NOT EXISTS sys_notice_read (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    notice_id INTEGER NOT NULL,
+    read_time DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_user_notice_read ON sys_notice_read(user_id, notice_id);
+
+-- 2. 插入登录日志菜单与查询按钮
+INSERT OR IGNORE INTO sys_menu (id, parent_id, menu_name, menu_type, path, component, icon, sort, perms)
+VALUES (28, 3, '登录日志', 'C', '/system/login-logs', 'system/LoginLogManagement', 'Document', 5, 'system:login-log:view');
+
+INSERT OR IGNORE INTO sys_menu (id, parent_id, menu_name, menu_type, icon, sort, perms)
+VALUES (29, 28, '查询日志', 'F', NULL, 1, 'system:login-log:query');
+
+-- 3. 将登录日志权限分配给 root 角色
+INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 28);
+INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 29);
+
+

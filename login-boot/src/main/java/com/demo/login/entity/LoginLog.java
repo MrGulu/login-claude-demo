@@ -1,8 +1,6 @@
 package com.demo.login.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,8 +9,8 @@ import java.time.LocalDateTime;
 /**
  * 登录日志实体类
  *
- * @author Claude
- * @since 2024-03-02
+ * @author Antigravity
+ * @since 2026-06-06
  */
 @Data
 @TableName("sys_login_log")
@@ -23,7 +21,7 @@ public class LoginLog implements Serializable {
     /**
      * 日志ID
      */
-    @TableId(value = "id", type = IdType.NONE)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
@@ -47,7 +45,7 @@ public class LoginLog implements Serializable {
     private String loginLocation;
 
     /**
-     * 浏览器
+     * 浏览器名称
      */
     private String browser;
 
@@ -67,7 +65,8 @@ public class LoginLog implements Serializable {
     private String message;
 
     /**
-     * 登录时间
+     * 访问时间
      */
+    @TableField(fill = FieldFill.INSERT)
     private LocalDateTime loginTime;
 }

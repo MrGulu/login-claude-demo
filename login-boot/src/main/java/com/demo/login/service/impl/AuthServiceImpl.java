@@ -17,8 +17,12 @@ import com.demo.login.vo.UserInfoVO;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.data.redis.core.StringRedisTemplate; // 注释掉Redis依赖
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import javax.servlet.http.HttpServletRequest;
+import cn.hutool.http.useragent.UserAgent;
+import cn.hutool.http.useragent.UserAgentUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -213,15 +217,58 @@ public class AuthServiceImpl implements IAuthService {
      */
     private void saveLoginLog(Long userId, String username, Integer status, String message) {
         LoginLog loginLog = new LoginLog();
-        loginLog.setId(System.currentTimeMillis()); // 使用时间戳作为ID
         loginLog.setUserId(userId);
         loginLog.setUsername(username);
         loginLog.setStatus(status);
         loginLog.setMessage(message);
+        
+        try {
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            if (attributes != null) {
+                HttpServletRequest request = attributes.getRequest();
+                
+                // 1. 获取客户端IP
+                String ip = request.getHeader("X-Forwarded-For");
+                if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+                    ip = request.getRemoteAddr();
+                }
+                if (ip != null && ip.contains(",")) {
+                    ip = ip.split(",")[0].trim();
+                }
+                loginLog.setIpAddress(ip);
+                
+                // 2. 判定IP物理归属
+                if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip)) {
+                    loginLog.setLoginLocation("内网IP");
+                } else {
+                    loginLog.setLoginLocation("局域网/外网");
+                }
+                
+                // 3. 解析User-Agent
+                String uaStr = request.getHeader("User-Agent");
+                if (uaStr != null && !uaStr.isEmpty()) {
+                    UserAgent ua = UserAgentUtil.parse(uaStr);
+                    loginLog.setBrowser(ua.getBrowser().getName() + " " + ua.getVersion());
+                    loginLog.setOs(ua.getOs().getName());
+                } else {
+                    loginLog.setBrowser("Unknown");
+                    loginLog.setOs("Unknown");
+                }
+            } else {
+                loginLog.setIpAddress("127.0.0.1");
+                loginLog.setLoginLocation("系统内部");
+                loginLog.setBrowser("Unknown");
+                loginLog.setOs("Unknown");
+            }
+        } catch (Exception e) {
+            log.error("解析登录日志客户端信息失败", e);
+            loginLog.setIpAddress("127.0.0.1");
+            loginLog.setLoginLocation("异常记录");
+            loginLog.setBrowser("Unknown");
+            loginLog.setOs("Unknown");
+        }
+
         loginLog.setLoginTime(LocalDateTime.now());
-        loginLog.setIpAddress("127.0.0.1"); // 实际项目中应该获取真实IP
-        loginLog.setBrowser("Unknown");
-        loginLog.setOs("Unknown");
         loginLogMapper.insert(loginLog);
     }
 }
