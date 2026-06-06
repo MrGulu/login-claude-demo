@@ -1,5 +1,5 @@
-/* Element Plus Theme Customization */
-:root {
+/* Element Plus Theme Customization - Restricted to Login View to avoid global pollution */
+.login-view {
   --el-color-primary: #dc2626;
   --el-color-primary-light-3: #ef4444;
   --el-color-primary-light-5: #f87171;
@@ -11,8 +11,8 @@
   --el-border-radius-small: 12px;
 }
 
-/* Override Element Plus default styles */
-.el-input__wrapper {
+/* Override Element Plus default styles inside Login View */
+.login-view .el-input__wrapper {
   background: rgba(255, 255, 255, 0.8) !important;
   border: 2px solid rgba(220, 38, 38, 0.2) !important;
   border-radius: 16px !important;
@@ -21,42 +21,42 @@
   padding: 1rem 1.25rem !important;
 }
 
-.el-input__wrapper:hover {
+.login-view .el-input__wrapper:hover {
   border-color: rgba(220, 38, 38, 0.3) !important;
 }
 
-.el-input__wrapper.is-focus {
+.login-view .el-input__wrapper.is-focus {
   background: white !important;
   border-color: var(--color-primary) !important;
   box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1), 0 10px 30px rgba(220, 38, 38, 0.15) !important;
   transform: translateY(-2px);
 }
 
-.el-input__inner {
+.login-view .el-input__inner {
   color: var(--color-text) !important;
   font-family: var(--font-body) !important;
   font-size: 1rem !important;
   font-weight: 600 !important;
 }
 
-.el-input__inner::placeholder {
+.login-view .el-input__inner::placeholder {
   color: var(--color-text-muted) !important;
   opacity: 0.6 !important;
 }
 
 /* Checkbox */
-.el-checkbox__input.is-checked .el-checkbox__inner {
+.login-view .el-checkbox__input.is-checked .el-checkbox__inner {
   background-color: var(--color-primary) !important;
   border-color: var(--color-primary) !important;
 }
 
-.el-checkbox__label {
+.login-view .el-checkbox__label {
   color: var(--color-text) !important;
   font-weight: 600 !important;
 }
 
 /* Button */
-.el-button--primary {
+.login-view .el-button--primary {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%) !important;
   border: none !important;
   border-radius: 16px !important;
@@ -68,21 +68,21 @@
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
-.el-button--primary:hover {
+.login-view .el-button--primary:hover {
   transform: translateY(-3px) !important;
   box-shadow: 0 15px 40px rgba(220, 38, 38, 0.4) !important;
 }
 
-.el-button--primary:active {
+.login-view .el-button--primary:active {
   transform: translateY(-1px) !important;
 }
 
 /* Form Item */
-.el-form-item {
+.login-view .el-form-item {
   margin-bottom: 1.5rem !important;
 }
 
-.el-form-item__label {
+.login-view .el-form-item__label {
   font-size: 0.875rem !important;
   font-weight: 700 !important;
   color: var(--color-text) !important;

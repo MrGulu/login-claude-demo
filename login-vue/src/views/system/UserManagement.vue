@@ -70,7 +70,7 @@
         header-row-class-name="table-header"
         row-class-name="table-row"
       >
-        <el-table-column prop="username" label="用户名" width="140">
+        <el-table-column prop="username" label="用户名" min-width="140">
           <template #default="{ row }">
             <div class="username-cell">
               <el-icon class="user-icon"><User /></el-icon>
@@ -78,9 +78,9 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="nickname" label="昵称" width="140" />
-        <el-table-column prop="email" label="邮箱" width="200" show-overflow-tooltip />
-        <el-table-column prop="phone" label="手机号" width="140" />
+        <el-table-column prop="nickname" label="昵称" min-width="140" />
+        <el-table-column prop="email" label="邮箱" min-width="200" show-overflow-tooltip />
+        <el-table-column prop="phone" label="手机号" min-width="140" />
         <el-table-column label="状态" width="100" align="center">
           <template #default="{ row }">
             <el-tag
@@ -101,7 +101,7 @@
             </el-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="createTime" label="创建时间" width="180" />
+        <el-table-column prop="createTime" label="创建时间" min-width="180" />
         <el-table-column label="操作" width="80" fixed="right" align="center">
           <template #default="{ row }">
             <div class="action-buttons">
@@ -185,71 +185,69 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="850px"
+      width="650px"
       @close="handleDialogClose"
       class="user-dialog"
       :close-on-click-modal="false"
+      destroy-on-close
     >
-      <el-form
-        ref="formRef"
-        :model="formData"
-        :rules="rules"
-        class="user-form"
-        label-position="top"
-      >
-        <div class="form-row">
-          <el-form-item label="用户名" prop="username" class="form-col-small">
-            <el-input
-              v-model="formData.username"
-              placeholder="请输入用户名（3-50字符）"
-              :disabled="isEdit"
-            />
-          </el-form-item>
-          <el-form-item label="密码" prop="password" :required="!isEdit" class="form-col-small">
-            <el-input
-              v-model="formData.password"
-              type="password"
-              placeholder="请输入密码（6-20字符）"
-              show-password
-            />
-            <div v-if="isEdit" class="form-tip">
-              <el-icon><InfoFilled /></el-icon>
-              <span>留空则不修改密码</span>
-            </div>
-          </el-form-item>
-          <el-form-item label="昵称" prop="nickname" class="form-col-small">
-            <el-input
-              v-model="formData.nickname"
-              placeholder="请输入昵称"
-            />
-          </el-form-item>
-        </div>
-
-        <div class="form-row">
-          <el-form-item label="邮箱" prop="email" class="form-col-small">
-            <el-input
-              v-model="formData.email"
-              placeholder="请输入邮箱地址"
-            />
-          </el-form-item>
-          <el-form-item label="手机号" prop="phone" class="form-col-small">
-            <el-input
-              v-model="formData.phone"
-              placeholder="请输入手机号"
-              maxlength="11"
-              @input="handleFormPhoneInput"
-            />
-          </el-form-item>
-          <el-form-item label="状态" prop="status" class="form-col-small">
-            <el-radio-group v-model="formData.status" class="status-radio">
-              <el-radio :label="1" border>正常</el-radio>
-              <el-radio :label="0" border>禁用</el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </div>
-
-        <div class="form-row">
-          <el-form-item label="备注" prop="remark" class="form-col-full">
+      <div class="dialog-content-wrapper">
+        <el-form
+          ref="formRef"
+          :model="formData"
+          :rules="rules"
+          class="user-form"
+          label-position="top"
+        >
+          <div class="form-grid">
+            <el-form-item label="用户名" prop="username">
+              <el-input
+                v-model="formData.username"
+                placeholder="请输入用户名（3-50字符）"
+                :disabled="isEdit"
+              />
+            </el-form-item>
+            <el-form-item label="密码" prop="password" :required="!isEdit">
+              <el-input
+                v-model="formData.password"
+                type="password"
+                placeholder="请输入密码（6-20字符）"
+                show-password
+              />
+              <div v-if="isEdit" class="form-tip">
+                <el-icon><InfoFilled /></el-icon>
+                <span>留空则不修改密码</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="昵称" prop="nickname">
+              <el-input
+                v-model="formData.nickname"
+                placeholder="请输入昵称"
+              />
+            </el-form-item>
+            <el-form-item label="邮箱" prop="email">
+              <el-input
+                v-model="formData.email"
+                placeholder="请输入邮箱地址"
+              />
+            </el-form-item>
+            <el-form-item label="手机号" prop="phone">
+              <el-input
+                v-model="formData.phone"
+                placeholder="请输入手机号"
+                maxlength="11"
+                @input="handleFormPhoneInput"
+              />
+            </el-form-item>
+            <el-form-item label="状态" prop="status">
+              <el-radio-group v-model="formData.status" class="status-radio">
+                <el-radio :label="1" border>正常</el-radio>
+                <el-radio :label="0" border>禁用</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </div>
+          
+          <el-form-item label="备注" prop="remark" class="full-width-item">
             <el-input
               v-model="formData.remark"
               type="textarea"
@@ -259,8 +257,8 @@
               show-word-limit
             />
           </el-form-item>
-        </div>
-      </el-form>
+        </el-form>
+      </div>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="dialogVisible = false" class="cancel-btn">取消</el-button>
@@ -784,402 +782,233 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* 导入优雅字体 */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
 
 .user-management {
   min-height: 100vh;
   padding: 24px 32px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  animation: fadeIn 0.6s ease-out;
+  background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%);
+  animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Fira Sans', sans-serif;
+  color: #4C1D95;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* 页面标题 */
 .page-header {
-  margin-bottom: 20px;
-  animation: slideDown 0.8s ease-out;
+  margin-bottom: 24px;
 }
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .page-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 32px;
+  font-family: 'Fira Code', monospace;
+  font-size: 28px;
   font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 4px 0;
+  color: #4C1D95;
+  margin: 0 0 8px 0;
   letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+}
+.page-subtitle {
+  font-size: 14px;
+  color: #7C3AED;
+  opacity: 0.8;
+  margin: 0;
 }
 
-.page-subtitle {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 400;
-  color: #6c757d;
-  margin: 0;
-  letter-spacing: 0.3px;
+/* 通用卡片容器样式 */
+.search-section, .toolbar, .table-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.05);
+  border: 1px solid rgba(124, 58, 237, 0.1);
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
 }
 
 /* 搜索区域 */
 .search-section {
-  background: #ffffff;
-  border-radius: 12px;
   padding: 16px 24px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  animation: slideUp 0.8s ease-out 0.1s both;
 }
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .search-form {
-  margin: 0;
   display: flex;
   align-items: center;
-  line-height: 1;
+  flex-wrap: wrap;
+  gap: 16px;
 }
-
 .search-form :deep(.el-form-item) {
-  margin-bottom: 0 !important;
-  margin-right: 16px;
+  margin: 0 !important;
 }
-
-.search-form :deep(.el-form-item:last-child) {
-  margin-right: 0;
+.search-input, .search-select {
+  width: 180px;
 }
-
-.search-input,
-.search-select {
-  width: 160px;
-}
-
 .search-input :deep(.el-input__wrapper),
 .search-select :deep(.el-input__wrapper) {
-  border-radius: 10px;
-  box-shadow: 0 0 0 1px #e0e0e0 inset;
-  transition: all 0.3s ease;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px #E5E7EB inset;
+  transition: all 0.2s ease;
+  background: #F9FAFB;
 }
-
 .search-input :deep(.el-input__wrapper:hover),
 .search-select :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px #c0c0c0 inset;
+  box-shadow: 0 0 0 1px #C4B5FD inset;
+  background: #ffffff;
 }
-
 .search-input :deep(.el-input__wrapper.is-focus),
 .search-select :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 2px #dc2626 inset;
+  box-shadow: 0 0 0 2px #7C3AED inset;
+  background: #ffffff;
 }
 
-.search-btn {
-  border-radius: 10px;
-  padding: 12px 24px;
+/* 按钮通用交互 */
+.el-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border-radius: 8px;
+}
+.el-button:active {
+  transform: scale(0.96);
+}
+
+.search-btn, .add-btn, .submit-btn {
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%) !important;
+  border: none !important;
+  font-family: 'Fira Sans', sans-serif;
   font-weight: 500;
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  border: none;
-  transition: all 0.3s ease;
+  color: white !important;
 }
-
-.search-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+.search-btn:hover, .add-btn:hover, .submit-btn:hover {
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+  transform: translateY(-1px);
 }
-
 .reset-btn {
-  border-radius: 10px;
-  padding: 12px 24px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  border: 1px solid #D1D5DB;
+  color: #4B5563;
+  background: #ffffff;
 }
-
 .reset-btn:hover {
-  transform: translateY(-2px);
+  border-color: #7C3AED;
+  color: #7C3AED;
+  background: #F3E8FF;
 }
 
 /* 操作栏 */
 .toolbar {
+  padding: 16px 24px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 16px 24px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  animation: slideUp 0.8s ease-out 0.2s both;
 }
-
-.add-btn {
-  border-radius: 10px;
-  padding: 12px 28px;
-  font-weight: 500;
-  font-size: 15px;
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  border: none;
-  transition: all 0.3s ease;
-}
-
-.add-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
-}
-
 .toolbar-info {
-  font-family: 'Inter', sans-serif;
   font-size: 14px;
-  color: #6c757d;
+  color: #6B7280;
 }
-
 .count {
+  font-family: 'Fira Code', monospace;
   font-weight: 600;
-  color: #dc2626;
-  font-size: 18px;
+  color: #7C3AED;
+  font-size: 16px;
   margin: 0 4px;
 }
 
 /* 表格容器 */
 .table-container {
-  background: #ffffff;
-  border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  animation: slideUp 0.8s ease-out 0.3s both;
+  overflow: hidden;
 }
 
-/* 表格样式 */
 .user-table {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Fira Sans', sans-serif;
+  --el-table-border-color: #F3F4F6;
+  --el-table-header-bg-color: #F3E8FF;
+  --el-table-row-hover-bg-color: #FAF5FF;
 }
-
-.user-table :deep(.table-header) {
-  background: #f8f9fa;
-}
-
 .user-table :deep(.table-header th) {
+  font-family: 'Fira Code', monospace;
   font-weight: 600;
-  font-size: 13px;
-  color: #495057;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  padding: 12px 12px;
-  border-bottom: 2px solid #e9ecef;
+  color: #4C1D95;
+  background-color: var(--el-table-header-bg-color);
+  padding: 12px;
+  border-bottom: 2px solid #E9D5FF;
 }
-
 .user-table :deep(.table-row) {
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
-
 .user-table :deep(.table-row:hover) {
-  background: #f8f9fa;
-  transform: scale(1.01);
+  transform: translateX(2px);
 }
-
 .user-table :deep(.el-table__cell) {
-  padding: 12px 12px;
-  border-bottom: 1px solid #f1f3f5;
+  padding: 14px 12px;
+  border-bottom: 1px solid #F3F4F6;
 }
 
 .username-cell {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.user-icon {
-  color: #dc2626;
-  font-size: 16px;
-}
-
-.status-tag {
   font-weight: 500;
-  padding: 4px 12px;
+}
+.user-icon {
+  color: #7C3AED;
+}
+.status-tag {
   border-radius: 6px;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.5px;
 }
 
+/* 操作菜单按钮 */
 .action-buttons {
   display: flex;
   justify-content: center;
-  align-items: center;
 }
-
 .action-menu-btn {
-  width: 34px;
-  height: 34px;
-  padding: 0;
-  border-radius: 10px;
-  border: none;
-  background: linear-gradient(135deg, #dc2626 0%, #f59e0b 100%);
-  transition: all 0.3s ease;
-  box-shadow: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #F3E8FF;
+  border: 1px solid transparent;
+  color: #7C3AED;
 }
-
 .action-menu-btn:hover {
+  background: #7C3AED;
+  color: white;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.3);
 }
 
-.action-menu-btn:active {
-  transform: translateY(0);
-}
-
-.action-icon {
-  font-size: 17px;
-  color: #ffffff;
-  transition: all 0.3s ease;
-}
-
-/* 下拉菜单样式 */
+/* 下拉菜单 */
 .action-dropdown {
-  min-width: 160px;
-  padding: 8px 0;
   border-radius: 12px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid #f1f3f5;
-  background: #ffffff;
-  animation: dropdownSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid #E5E7EB;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  padding: 8px;
 }
-
-@keyframes dropdownSlideIn {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
 .dropdown-item-custom {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 6px;
+  margin-bottom: 2px;
+  transition: all 0.2s ease;
+  font-family: 'Fira Sans', sans-serif;
   color: #374151;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
+  padding: 8px 16px;
 }
-
-.dropdown-item-custom::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 3px;
-  height: 100%;
-  background: transparent;
-  transition: all 0.3s ease;
-}
-
 .dropdown-item-custom:hover {
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%);
-  color: #1f2937;
-  padding-left: 20px;
+  background: #F3E8FF;
+  color: #7C3AED;
 }
-
-.dropdown-item-custom:hover::before {
-  background: #3b82f6;
-}
-
 .dropdown-item-custom.danger-item:hover {
-  background: linear-gradient(90deg, rgba(239, 68, 68, 0.08) 0%, rgba(239, 68, 68, 0.02) 100%);
-  color: #dc2626;
+  background: #FEF2F2;
+  color: #DC2626;
 }
-
-.dropdown-item-custom.danger-item:hover::before {
-  background: #ef4444;
+.dropdown-item-custom .item-icon {
+  margin-right: 8px;
+  transition: transform 0.2s ease;
 }
-
-.dropdown-item-custom.is-disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.dropdown-item-custom.is-disabled:hover {
-  background: transparent;
-  padding-left: 16px;
-}
-
-.dropdown-item-custom.is-disabled:hover::before {
-  background: transparent;
-}
-
-.item-icon {
-  font-size: 16px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  flex-shrink: 0;
-}
-
-.primary-icon {
-  color: #3b82f6;
-}
-
-.info-icon {
-  color: #6366f1;
-}
-
-.warning-icon {
-  color: #f59e0b;
-}
-
-.danger-icon {
-  color: #ef4444;
-}
-
 .dropdown-item-custom:hover .item-icon {
-  transform: scale(1.15) translateX(2px);
-}
-
-.dropdown-item-custom.is-disabled:hover .item-icon {
-  transform: none;
-}
-
-.item-text {
-  font-family: 'Inter', sans-serif;
-  letter-spacing: 0.01em;
-}
-
-/* 分割线样式 */
-:deep(.el-dropdown-menu__item--divided) {
-  margin-top: 8px;
-  border-top: 1px solid #f1f3f5;
-  padding-top: 18px;
+  transform: scale(1.1);
 }
 
 /* 分页器 */
@@ -1188,165 +1017,112 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
 }
-
-.custom-pagination :deep(.el-pagination__total),
-.custom-pagination :deep(.el-pagination__jump) {
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-}
-
 .custom-pagination :deep(.el-pager li) {
-  border-radius: 8px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  border-radius: 6px;
+  font-family: 'Fira Code', monospace;
+  transition: all 0.2s ease;
 }
-
-.custom-pagination :deep(.el-pager li:hover) {
-  transform: translateY(-2px);
-}
-
 .custom-pagination :deep(.el-pager li.is-active) {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  color: #ffffff;
+  background: #7C3AED;
+  color: white;
+}
+.custom-pagination :deep(.el-pager li:hover:not(.is-active)) {
+  color: #7C3AED;
 }
 
 /* 对话框 */
-.user-dialog :deep(.el-dialog) {
+:deep(.el-dialog.user-dialog),
+:deep(.el-dialog.role-dialog),
+:deep(.el-dialog.position-dialog) {
   border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
   overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 20px 25px -5px rgba(124, 58, 237, 0.08), 0 10px 10px -5px rgba(124, 58, 237, 0.04);
+  border: 1px solid rgba(124, 58, 237, 0.08);
 }
-
-.user-dialog :deep(.el-dialog__header) {
-  padding: 24px 32px;
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  border-bottom: none;
+:deep(.el-dialog.user-dialog .el-dialog__header),
+:deep(.el-dialog.role-dialog .el-dialog__header),
+:deep(.el-dialog.position-dialog .el-dialog__header) {
+  background: #ffffff;
+  margin: 0;
+  padding: 24px 28px 20px 28px;
+  border-bottom: 1px solid rgba(124, 58, 237, 0.06);
 }
-
-.user-dialog :deep(.el-dialog__title) {
-  font-family: 'Playfair Display', serif;
-  font-size: 22px;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: 0.5px;
+:deep(.el-dialog.user-dialog .el-dialog__title),
+:deep(.el-dialog.role-dialog .el-dialog__title),
+:deep(.el-dialog.position-dialog .el-dialog__title) {
+  font-family: 'Fira Sans', sans-serif;
+  color: #1F2937;
+  font-weight: 600;
+  font-size: 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
-
-.user-dialog :deep(.el-dialog__headerbtn .el-dialog__close) {
-  color: #ffffff;
-  font-size: 20px;
+:deep(.el-dialog.user-dialog .el-dialog__title::before),
+:deep(.el-dialog.role-dialog .el-dialog__title::before),
+:deep(.el-dialog.position-dialog .el-dialog__title::before) {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%);
+  border-radius: 2px;
 }
-
-.user-dialog :deep(.el-dialog__headerbtn .el-dialog__close):hover {
-  color: #fef2f2;
-}
-
-.user-dialog :deep(.el-dialog__body) {
-  padding: 32px;
-  background: #fafafa;
-}
-
-/* 表单行布局 */
-.form-row {
+:deep(.el-dialog.user-dialog .el-dialog__headerbtn),
+:deep(.el-dialog.role-dialog .el-dialog__headerbtn),
+:deep(.el-dialog.position-dialog .el-dialog__headerbtn) {
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #F3F4F6;
   display: flex;
-  gap: 16px;
-  margin-bottom: 20px;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  border: none;
 }
-
-.form-row:last-child {
-  margin-bottom: 0;
+:deep(.el-dialog.user-dialog .el-dialog__headerbtn:hover),
+:deep(.el-dialog.role-dialog .el-dialog__headerbtn:hover),
+:deep(.el-dialog.position-dialog .el-dialog__headerbtn:hover) {
+  background: #F3E8FF;
 }
-
-.form-col {
-  flex: 1;
-  margin-bottom: 0 !important;
+:deep(.el-dialog.user-dialog .el-dialog__headerbtn .el-dialog__close),
+:deep(.el-dialog.role-dialog .el-dialog__headerbtn .el-dialog__close),
+:deep(.el-dialog.position-dialog .el-dialog__headerbtn .el-dialog__close) {
+  color: #9CA3AF;
+  transition: all 0.2s ease;
 }
-
-.form-col-small {
-  flex: 0 0 250px;
-  margin-bottom: 0 !important;
-}
-
-.form-col-full {
-  flex: 1;
-  margin-bottom: 0 !important;
+:deep(.el-dialog.user-dialog .el-dialog__headerbtn:hover .el-dialog__close),
+:deep(.el-dialog.role-dialog .el-dialog__headerbtn:hover .el-dialog__close),
+:deep(.el-dialog.position-dialog .el-dialog__headerbtn:hover .el-dialog__close) {
+  color: #7C3AED;
 }
 
 .user-form :deep(.el-form-item__label) {
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  color: #1f2937;
-  font-size: 14px;
-  margin-bottom: 8px;
-  padding: 0;
-  line-height: 1.5;
-}
-
-.user-form :deep(.el-form-item__content) {
-  line-height: normal;
-}
-
-.user-form :deep(.el-input__wrapper) {
-  border-radius: 8px;
-  box-shadow: 0 0 0 1px #d1d5db inset;
-  transition: all 0.2s ease;
-  background: #ffffff;
-  padding: 6px 12px;
-}
-
-.user-form :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px #9ca3af inset;
-}
-
-.user-form :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 2px #dc2626 inset;
-}
-
-.user-form :deep(.el-input__inner) {
-  font-size: 14px;
-  color: #111827;
-  line-height: 1.5;
-}
-
-.user-form :deep(.el-input__inner::placeholder) {
-  color: #9ca3af;
-}
-
-.user-form :deep(.el-textarea__inner) {
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  transition: all 0.2s ease;
-  font-size: 14px;
-  line-height: 1.6;
-  background: #ffffff;
-  resize: none;
-  padding: 8px 12px;
-}
-
-.user-form :deep(.el-textarea__inner:hover) {
-  border-color: #9ca3af;
-}
-
-.user-form :deep(.el-textarea__inner:focus) {
-  border-color: #dc2626;
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
-}
-
-.user-form :deep(.el-textarea__inner::placeholder) {
-  color: #9ca3af;
-}
-
-.form-tip {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: #f59e0b;
-  margin-top: 6px;
   font-weight: 500;
+  color: #4B5563;
+  font-size: 13px;
+  padding-bottom: 6px !important;
 }
-
-.form-tip .el-icon {
-  font-size: 14px;
+.user-form :deep(.el-input__wrapper),
+.user-form :deep(.el-textarea__wrapper) {
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px #E5E7EB inset !important;
+  background: #F9FAFB;
+  transition: all 0.2s ease;
+}
+.user-form :deep(.el-input__wrapper:hover),
+.user-form :deep(.el-textarea__wrapper:hover) {
+  box-shadow: 0 0 0 1px #C4B5FD inset !important;
+  background: #ffffff;
+}
+.user-form :deep(.el-input__wrapper.is-focus),
+.user-form :deep(.el-textarea__wrapper.is-focus) {
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2) inset, 0 0 0 3px rgba(124, 58, 237, 0.15) !important;
+  background: #ffffff;
 }
 
 .status-radio {
@@ -1354,147 +1130,150 @@ onMounted(() => {
   gap: 12px;
   width: 100%;
 }
-
-.status-radio :deep(.el-radio) {
-  margin-right: 0;
-  flex: 1;
-}
-
 .status-radio :deep(.el-radio.is-bordered) {
   border-radius: 8px;
-  padding: 10px 20px;
+  border: 1px solid #E5E7EB !important;
+  background: #F9FAFB;
   transition: all 0.2s ease;
-  border: 2px solid #d1d5db;
-  background: #ffffff;
+  margin: 0 !important;
+  flex: 1;
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 40px;
 }
-
 .status-radio :deep(.el-radio.is-bordered:hover) {
-  border-color: #9ca3af;
+  border-color: #C4B5FD !important;
+  background: #FDFEFF;
 }
-
 .status-radio :deep(.el-radio.is-bordered.is-checked) {
-  border-color: #dc2626;
-  background: #fef2f2;
+  border-color: #7C3AED !important;
+  background: #F5F3FF;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.08);
+}
+.status-radio :deep(.el-radio__input.is-checked .el-radio__inner) {
+  border-color: #7C3AED !important;
+  background: #7C3AED !important;
+}
+.status-radio :deep(.el-radio__input.is-checked + .el-radio__label) {
+  color: #7C3AED !important;
+  font-weight: 500;
 }
 
-.status-radio :deep(.el-radio__label) {
-  font-weight: 600;
-  font-size: 14px;
+/* 角色与岗位分配复选框美化 */
+.role-checkbox-group, .position-checkbox-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 12px 8px;
+}
+.role-checkbox, .position-checkbox {
+  border: 1px solid #E5E7EB !important;
+  border-radius: 8px !important;
+  padding: 10px 16px !important;
+  background: #F9FAFB !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  transition: all 0.2s ease !important;
+}
+.role-checkbox:hover, .position-checkbox:hover {
+  border-color: #C4B5FD !important;
+  background: #ffffff !important;
+}
+.role-checkbox.is-checked, .position-checkbox.is-checked {
+  border-color: #7C3AED !important;
+  background: #F5F3FF !important;
+}
+.role-checkbox :deep(.el-checkbox__input.is-checked .el-checkbox__inner),
+.position-checkbox :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+  background-color: #7C3AED !important;
+  border-color: #7C3AED !important;
+}
+.role-checkbox :deep(.el-checkbox__label),
+.position-checkbox :deep(.el-checkbox__label) {
+  color: #374151 !important;
+  font-weight: 500 !important;
+}
+.role-checkbox :deep(.el-checkbox__input.is-checked + .el-checkbox__label),
+.position-checkbox :deep(.el-checkbox__input.is-checked + .el-checkbox__label) {
+  color: #7C3AED !important;
 }
 
 .dialog-footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(124, 58, 237, 0.06);
+  margin: 10px -24px -20px -24px;
+  background: #F9FAFB;
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  padding: 20px 32px;
-  background: #f3f4f6;
-  border-top: 1px solid #e5e7eb;
 }
 
 .cancel-btn {
   border-radius: 8px;
-  padding: 10px 24px;
-  font-weight: 600;
-  border: 2px solid #d1d5db;
-  color: #6b7280;
-  background: #ffffff;
-}
-
-.cancel-btn:hover {
-  border-color: #9ca3af;
-  color: #374151;
-}
-
-.submit-btn {
-  border-radius: 8px;
-  padding: 10px 24px;
-  font-weight: 600;
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  border: none;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
-}
-
-.submit-btn:hover {
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
-}
-
-/* 角色对话框 */
-.role-dialog :deep(.el-dialog) {
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
-}
-
-.role-checkbox-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.role-checkbox {
-  padding: 12px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.role-checkbox:hover {
-  border-color: #dc2626;
-  background: rgba(220, 38, 38, 0.05);
-}
-
-.role-checkbox :deep(.el-checkbox__label) {
+  border: 1px solid #E5E7EB !important;
+  color: #4B5563 !important;
+  background: #ffffff !important;
   font-weight: 500;
+  transition: all 0.2s ease;
+}
+.cancel-btn:hover {
+  border-color: #C4B5FD !important;
+  color: #7C3AED !important;
+  background: #F5F3FF !important;
+}
+
+/* 状态标签通透徽章化 */
+.status-tag {
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 2px 8px;
+  border: 1px solid transparent;
+}
+.status-tag.el-tag--success {
+  background-color: #ECFDF5 !important;
+  color: #059669 !important;
+  border-color: #A7F3D0 !important;
+}
+.status-tag.el-tag--danger {
+  background-color: #FEF2F2 !important;
+  color: #DC2626 !important;
+  border-color: #FCA5A5 !important;
 }
 
 /* 响应式 */
 @media (max-width: 768px) {
   .user-management {
-    padding: 20px;
+    padding: 16px;
   }
-
-  .page-title {
-    font-size: 32px;
-  }
-
-  .search-section,
-  .toolbar,
-  .table-container {
-    padding: 20px;
-  }
-
-  .search-input,
-  .search-select {
+  .search-input, .search-select {
     width: 100%;
   }
-
-  .search-form :deep(.el-form-item) {
-    margin-right: 0;
-    margin-bottom: 12px;
-  }
-
-  /* 对话框响应式 */
-  .user-dialog :deep(.el-dialog) {
-    width: 95% !important;
-    margin: 20px auto;
-  }
-
-  .form-row {
-    flex-direction: column;
+  .form-grid {
+    grid-template-columns: 1fr;
     gap: 0;
   }
-
-  .form-col {
-    margin-bottom: 20px !important;
-  }
-
-  .user-dialog :deep(.el-dialog__header),
-  .user-dialog :deep(.el-dialog__body),
-  .dialog-footer {
-    padding-left: 20px;
-    padding-right: 20px;
+  .role-checkbox-group, .position-checkbox-group {
+    grid-template-columns: 1fr;
   }
 }
+
+.dialog-content-wrapper {
+  padding: 10px 0;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 20px;
+}
+.full-width-item {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+.user-form :deep(.el-form-item) {
+  margin-bottom: 20px;
+}
 </style>
+
