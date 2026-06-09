@@ -44,4 +44,9 @@ public class UserInfoVO implements Serializable {
      * 手机号
      */
     private String phone;
+
+    /**
+     * 角色Key列表
+     */
+    private java.util.List<String> roles;
 }

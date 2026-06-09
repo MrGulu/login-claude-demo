@@ -135,6 +135,14 @@
                       <span class="item-text">编辑用户</span>
                     </el-dropdown-item>
                     <el-dropdown-item
+                      v-if="isRoot"
+                      command="resetPassword"
+                      class="dropdown-item-custom"
+                    >
+                      <el-icon class="item-icon warning-icon"><Key /></el-icon>
+                      <span class="item-text">修改密码</span>
+                    </el-dropdown-item>
+                    <el-dropdown-item
                       v-if="hasPermission('system:user:role')"
                       :disabled="row.username === 'admin'"
                       command="role"
@@ -222,16 +230,16 @@
                 :disabled="isEdit"
               />
             </el-form-item>
-            <el-form-item label="密码" prop="password" :required="!isEdit">
+            <el-form-item label="密码" prop="password">
               <el-input
                 v-model="formData.password"
                 type="password"
                 placeholder="请输入密码（6-20字符）"
                 show-password
               />
-              <div v-if="isEdit" class="form-tip">
+              <div class="form-tip">
                 <el-icon><InfoFilled /></el-icon>
-                <span>留空则不修改密码</span>
+                <span>{{ isEdit ? '留空则不修改密码' : '留空则默认密码为 123456' }}</span>
               </div>
             </el-form-item>
             <el-form-item label="昵称" prop="nickname">
@@ -394,14 +402,56 @@
         </div>
       </template>
     </el-dialog>
+
+    <!-- 重置密码对话框 -->
+    <el-dialog
+      v-model="resetPasswordDialogVisible"
+      title="修改用户密码"
+      width="480px"
+      @close="handleResetPasswordDialogClose"
+      class="user-dialog"
+      :close-on-click-modal="false"
+      destroy-on-close
+    >
+      <div class="dialog-content-wrapper">
+        <el-form
+          ref="resetPasswordFormRef"
+          :model="resetPasswordForm"
+          :rules="resetPasswordRules"
+          label-position="top"
+        >
+          <el-form-item label="新密码" prop="password">
+            <el-input
+              v-model="resetPasswordForm.password"
+              type="password"
+              placeholder="请输入新密码（6-20字符）"
+              show-password
+            />
+          </el-form-item>
+        </el-form>
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="resetPasswordDialogVisible = false" class="cancel-btn">取消</el-button>
+          <el-button
+            type="primary"
+            @click="handleResetPasswordSubmit"
+            :loading="resetPasswordSubmitting"
+            class="submit-btn"
+          >
+            确认修改
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus, Search, User, UserFilled, Edit, Delete, Switch, Phone, InfoFilled, MoreFilled, Operation, Briefcase } from '@element-plus/icons-vue'
-import { getUserList as getUserListApi, createUser, updateUser, deleteUser as deleteUserApi, updateUserStatus as updateUserStatusApi, getUserRoles, assignRoles, getUserPositions, assignPositions } from '@/api/userManagement'
+import { Plus, Search, User, UserFilled, Edit, Delete, Switch, Phone, InfoFilled, MoreFilled, Operation, Briefcase, Key } from '@element-plus/icons-vue'
+import { getUserList as getUserListApi, createUser, updateUser, deleteUser as deleteUserApi, updateUserStatus as updateUserStatusApi, getUserRoles, assignRoles, getUserPositions, assignPositions, resetUserPassword } from '@/api/userManagement'
 import { getRoleList } from '@/api/role'
 import { getPositionList } from '@/api/position'
 import { getDepartmentList } from '@/api/dept'
@@ -454,9 +504,7 @@ const rules = {
   password: [
     {
       validator: (rule, value, callback) => {
-        if (!isEdit.value && !value) {
-          callback(new Error('请输入密码'))
-        } else if (value && (value.length < 6 || value.length > 20)) {
+        if (value && (value.length < 6 || value.length > 20)) {
           callback(new Error('密码长度在6-20个字符'))
         } else {
           callback()
@@ -723,8 +771,8 @@ const handleSubmit = async () => {
         ElMessage.error(response.message || '更新失败')
       }
     } else {
-      // 创建模式，密码必填
-      submitData.password = formData.password
+      // 创建模式，密码若不填写则默认 123456
+      submitData.password = formData.password || '123456'
       const response = await createUser(submitData)
       if (response.code === 200) {
         ElMessage.success('创建成功')
@@ -868,6 +916,8 @@ const handlePositionDialogClose = () => {
 const handleDropdownCommand = (command, row) => {
   if (command === 'edit') {
     handleEdit(row)
+  } else if (command === 'resetPassword') {
+    handleResetPassword(row)
   } else if (command === 'role') {
     handleAssignRole(row)
   } else if (command === 'position') {
@@ -876,6 +926,58 @@ const handleDropdownCommand = (command, row) => {
     handleStatusChange(row)
   } else if (command === 'delete') {
     handleDelete(row)
+  }
+}
+
+// 超级管理员角色判定
+const isRoot = computed(() => {
+  const userInfo = JSON.parse(localStorage.getItem('userInfo') || '{}')
+  return userInfo.username === 'admin' || (userInfo.roles && userInfo.roles.includes('root'))
+})
+
+// 重置密码相关变量及方法
+const resetPasswordDialogVisible = ref(false)
+const resetPasswordFormRef = ref()
+const resetPasswordSubmitting = ref(false)
+const resetPasswordForm = reactive({
+  userId: null,
+  password: ''
+})
+const resetPasswordRules = {
+  password: [
+    { required: true, message: '请输入新密码', trigger: 'blur' },
+    { min: 6, max: 20, message: '密码长度在6-20个字符', trigger: 'blur' }
+  ]
+}
+
+const handleResetPassword = (row) => {
+  resetPasswordForm.userId = row.id
+  resetPasswordForm.password = ''
+  resetPasswordDialogVisible.value = true
+}
+
+const handleResetPasswordDialogClose = () => {
+  resetPasswordFormRef.value?.resetFields()
+  resetPasswordForm.userId = null
+  resetPasswordForm.password = ''
+}
+
+const handleResetPasswordSubmit = async () => {
+  if (!resetPasswordFormRef.value) return
+  try {
+    await resetPasswordFormRef.value.validate()
+    resetPasswordSubmitting.value = true
+    const response = await resetUserPassword(resetPasswordForm.userId, resetPasswordForm.password)
+    if (response.code === 200) {
+      ElMessage.success('修改密码成功')
+      resetPasswordDialogVisible.value = false
+    } else {
+      ElMessage.error(response.message || '修改密码失败')
+    }
+  } catch (error) {
+    console.error('修改密码失败:', error)
+  } finally {
+    resetPasswordSubmitting.value = false
   }
 }
 

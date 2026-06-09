@@ -427,4 +427,35 @@ public class UserManagementServiceImpl implements IUserManagementService {
 
         return vo;
     }
+
+    @Override
+    @org.springframework.transaction.annotation.Transactional(rollbackFor = Exception.class)
+    public void resetPassword(Long currentUserId, Long targetUserId, String newPassword) {
+        // 校验当前登录用户是否拥有 root 角色
+        List<Long> roleIds = userRoleMapper.selectList(
+                new LambdaQueryWrapper<UserRole>()
+                        .eq(UserRole::getUserId, currentUserId)
+        ).stream().map(UserRole::getRoleId).collect(Collectors.toList());
+        
+        boolean isRoot = false;
+        if (!roleIds.isEmpty()) {
+            isRoot = roleMapper.selectBatchIds(roleIds).stream()
+                    .anyMatch(role -> "root".equals(role.getRoleKey()));
+        }
+        
+        if (!isRoot) {
+            throw new BusinessException("只有超级管理员(root)才能重置密码");
+        }
+        
+        // 查询目标用户
+        User targetUser = userMapper.selectById(targetUserId);
+        if (targetUser == null) {
+            throw new BusinessException("目标用户不存在");
+        }
+        
+        // 重置密码
+        targetUser.setPassword(com.demo.login.common.utils.PasswordUtil.encode(newPassword));
+        userMapper.updateById(targetUser);
+        log.info("管理员 {} 重置了用户 {} 的密码", currentUserId, targetUser.getUsername());
+    }
 }

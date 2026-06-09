@@ -91,4 +91,13 @@ public interface IUserManagementService {
      * @param positionIds 岗位ID列表
      */
     void assignPositions(Long userId, java.util.List<Long> positionIds);
+
+    /**
+     * 重置用户密码（仅限 root 角色操作）
+     *
+     * @param currentUserId 当前登录人ID
+     * @param targetUserId 目标被修改用户的ID
+     * @param newPassword 新密码
+     */
+    void resetPassword(Long currentUserId, Long targetUserId, String newPassword);
 }

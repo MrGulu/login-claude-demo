@@ -52,6 +52,12 @@ public class AuthServiceImpl implements IAuthService {
     @Autowired
     private IMenuService menuService;
 
+    @Autowired
+    private com.demo.login.mapper.UserRoleMapper userRoleMapper;
+
+    @Autowired
+    private com.demo.login.mapper.RoleMapper roleMapper;
+
     // @Autowired // 注释掉Redis依赖
     // private StringRedisTemplate redisTemplate;
 
@@ -122,6 +128,7 @@ public class AuthServiceImpl implements IAuthService {
 
         UserInfoVO userInfoVO = new UserInfoVO();
         BeanUtil.copyProperties(user, userInfoVO);
+        userInfoVO.setRoles(getUserRoleKeys(user.getId()));
         loginVO.setUserInfo(userInfoVO);
 
         log.info("用户登录成功: {}", user.getUsername());
@@ -170,7 +177,8 @@ public class AuthServiceImpl implements IAuthService {
         // 转换为VO
         UserInfoVO userInfoVO = new UserInfoVO();
         BeanUtil.copyProperties(user, userInfoVO);
-
+        userInfoVO.setRoles(getUserRoleKeys(user.getId()));
+        
         return userInfoVO;
     }
 
@@ -270,5 +278,18 @@ public class AuthServiceImpl implements IAuthService {
 
         loginLog.setLoginTime(LocalDateTime.now());
         loginLogMapper.insert(loginLog);
+    }
+
+    private List<String> getUserRoleKeys(Long userId) {
+        List<Long> roleIds = userRoleMapper.selectList(
+                new com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper<com.demo.login.entity.UserRole>()
+                        .eq(com.demo.login.entity.UserRole::getUserId, userId)
+        ).stream().map(com.demo.login.entity.UserRole::getRoleId).collect(java.util.stream.Collectors.toList());
+        if (roleIds.isEmpty()) {
+            return java.util.Collections.emptyList();
+        }
+        return roleMapper.selectBatchIds(roleIds).stream()
+                .map(com.demo.login.entity.Role::getRoleKey)
+                .collect(java.util.stream.Collectors.toList());
     }
 }

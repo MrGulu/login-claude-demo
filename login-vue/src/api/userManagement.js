@@ -137,3 +137,16 @@ export function assignPositions(id, positionIds) {
     data: { positionIds }
   })
 }
+
+/**
+ * 重置用户密码（超级管理员特有）
+ * @param {number} id - 用户ID
+ * @param {string} password - 新密码
+ */
+export function resetUserPassword(id, password) {
+  return request({
+    url: `/admin/users/${id}/password`,
+    method: 'put',
+    data: { password }
+  })
+}

@@ -147,4 +147,17 @@ public class UserManagementController {
         userManagementService.assignPositions(dto.getUserId(), dto.getPositionIds());
         return Result.success();
     }
+
+    /**
+     * 重置用户密码（仅限 root 角色操作）
+     */
+    @PutMapping("/{id}/password")
+    @RequirePermission("system:user:edit")
+    public Result<Void> resetPassword(
+            @PathVariable Long id,
+            @org.springframework.web.bind.annotation.RequestAttribute("userId") Long currentUserId,
+            @Valid @RequestBody com.demo.login.dto.ResetUserPasswordDTO dto) {
+        userManagementService.resetPassword(currentUserId, id, dto.getPassword());
+        return Result.success();
+    }
 }

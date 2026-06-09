@@ -17,6 +17,8 @@
           v-model="formData.username"
           placeholder="请输入用户名"
           size="large"
+          name="username"
+          autocomplete="username"
         />
       </el-form-item>
 
@@ -27,6 +29,8 @@
           placeholder="请输入密码"
           size="large"
           show-password
+          name="password"
+          autocomplete="current-password"
         />
       </el-form-item>
 
@@ -40,7 +44,7 @@
         size="large"
         class="submit-btn"
         :loading="loading"
-        @click="handleSubmit"
+        native-type="submit"
       >
         {{ loading ? '登录中...' : '登录' }}
       </el-button>
