@@ -79,9 +79,19 @@
           </template>
         </el-table-column>
         <el-table-column prop="nickname" label="昵称" min-width="140" />
+        <el-table-column prop="roleNames" label="角色" min-width="140" show-overflow-tooltip>
+          <template #default="{ row }">
+            <span>{{ row.roleNames || '无角色' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="deptName" label="所属部门" min-width="140" show-overflow-tooltip>
           <template #default="{ row }">
             <span>{{ row.deptName || '无部门' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="positionNames" label="岗位" min-width="140" show-overflow-tooltip>
+          <template #default="{ row }">
+            <span>{{ row.positionNames || '无岗位' }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="email" label="邮箱" min-width="200" show-overflow-tooltip />
@@ -263,6 +273,26 @@
                 clearable
               />
             </el-form-item>
+            <el-form-item label="所属岗位" prop="positionIds">
+              <el-select
+                v-model="formData.positionIds"
+                multiple
+                placeholder="请选择所属岗位"
+                class="form-tree-select"
+                style="width: 100%"
+                collapse-tags
+                collapse-tags-tooltip
+                clearable
+              >
+                <el-option
+                  v-for="item in positionList"
+                  :key="item.id"
+                  :label="item.positionName"
+                  :value="item.id"
+                  :disabled="item.status === 0"
+                />
+              </el-select>
+            </el-form-item>
           </div>
           
           <el-form-item label="备注" prop="remark" class="full-width-item">
@@ -411,7 +441,8 @@ const formData = reactive({
   phone: '',
   status: 1,
   remark: '',
-  deptId: null
+  deptId: null,
+  positionIds: []
 })
 
 // 表单验证规则
@@ -495,6 +526,17 @@ const loadDeptOptions = async () => {
   }
 }
 
+const loadPositionOptions = async () => {
+  try {
+    const response = await getPositionList({ page: 1, size: 100 })
+    if (response.code === 200) {
+      positionList.value = response.data.records
+    }
+  } catch (error) {
+    console.error('加载岗位选项失败:', error)
+  }
+}
+
 // 权限检查函数
 const hasPermission = (permission) => {
   const userPerms = JSON.parse(localStorage.getItem('userPerms') || '[]')
@@ -566,6 +608,7 @@ const handleCurrentChange = (val) => {
 // 新增
 const handleAdd = () => {
   isEdit.value = false
+  formData.positionIds = []
   dialogVisible.value = true
 }
 
@@ -581,6 +624,7 @@ const handleEdit = (row) => {
   formData.status = row.status
   formData.remark = row.remark
   formData.deptId = row.deptId || null
+  formData.positionIds = row.positionIds || []
   dialogVisible.value = true
 }
 
@@ -660,7 +704,8 @@ const handleSubmit = async () => {
       phone: formData.phone || undefined,
       status: formData.status,
       remark: formData.remark || undefined,
-      deptId: formData.deptId || 0
+      deptId: formData.deptId || 0,
+      positionIds: formData.positionIds || []
     }
 
     // 如果是编辑模式
@@ -710,6 +755,7 @@ const handleDialogClose = () => {
   formData.status = 1
   formData.remark = ''
   formData.deptId = null
+  formData.positionIds = []
 }
 
 // 分配角色
@@ -752,6 +798,7 @@ const handleRoleSubmit = async () => {
     if (response.code === 200) {
       ElMessage.success('分配角色成功')
       roleDialogVisible.value = false
+      getUserList()
     }
   } catch (error) {
     ElMessage.error(error.response?.data?.message || '分配角色失败')
@@ -801,6 +848,7 @@ const handlePositionSubmit = async () => {
     if (response.code === 200) {
       ElMessage.success('分配岗位成功')
       positionDialogVisible.value = false
+      getUserList()
     }
   } catch (error) {
     console.error('分配岗位失败:', error)
@@ -835,6 +883,7 @@ const handleDropdownCommand = (command, row) => {
 onMounted(() => {
   getUserList()
   loadDeptOptions()
+  loadPositionOptions()
 })
 </script>
 

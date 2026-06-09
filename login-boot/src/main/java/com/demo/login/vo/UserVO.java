@@ -65,4 +65,26 @@ public class UserVO {
      * 部门名称
      */
     private String deptName;
+
+    /**
+     * 岗位ID列表
+     */
+    private java.util.List<Long> positionIds;
+
+    /**
+     * 岗位名称拼接串
+     */
+    private String positionNames;
+
+    /**
+     * 角色ID列表
+     */
+    private java.util.List<Long> roleIds;
+
+    /**
+     * 角色名称拼接串
+     */
+    private String roleNames;
 }
+
+

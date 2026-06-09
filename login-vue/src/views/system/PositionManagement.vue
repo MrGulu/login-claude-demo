@@ -155,64 +155,60 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogTitle"
-      width="600px"
+      width="650px"
       @close="handleDialogClose"
       class="position-dialog"
       :close-on-click-modal="false"
     >
-      <el-form
-        ref="formRef"
-        :model="formData"
-        :rules="rules"
-        class="position-form"
-        label-position="top"
-      >
-        <div class="form-row">
-          <el-form-item label="岗位名称" prop="positionName" class="form-col-half">
-            <el-input
-              v-model="formData.positionName"
-              placeholder="请输入岗位名称（2-50字符）"
-            />
-          </el-form-item>
-          <el-form-item label="岗位编码" prop="positionCode" class="form-col-half">
-            <el-input
-              v-model="formData.positionCode"
-              placeholder="请输入岗位编码（2-50字符）"
-            />
-          </el-form-item>
-        </div>
-
-        <div class="form-row">
-          <el-form-item label="排序" prop="sort" class="form-col-half">
-            <el-input-number
-              v-model="formData.sort"
-              :min="0"
-              :max="999"
-              placeholder="请输入排序号"
-              class="sort-input"
-            />
-          </el-form-item>
-          <el-form-item label="状态" prop="status" class="form-col-half">
-            <el-radio-group v-model="formData.status" class="status-radio">
-              <el-radio :label="1" border>正常</el-radio>
-              <el-radio :label="0" border>禁用</el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </div>
-
-        <div class="form-row">
-          <el-form-item label="备注" prop="remark" class="form-col-full">
-            <el-input
-              v-model="formData.remark"
-              type="textarea"
-              :rows="3"
-              placeholder="请输入备注信息（选填）"
-              maxlength="500"
-              show-word-limit
-            />
-          </el-form-item>
-        </div>
-      </el-form>
+      <div class="dialog-content-wrapper">
+        <el-form
+          ref="formRef"
+          :model="formData"
+          :rules="rules"
+          class="position-form"
+          label-position="top"
+        >
+          <div class="form-grid">
+            <el-form-item label="岗位名称" prop="positionName">
+              <el-input
+                v-model="formData.positionName"
+                placeholder="请输入岗位名称（2-50字符）"
+              />
+            </el-form-item>
+            <el-form-item label="岗位编码" prop="positionCode">
+              <el-input
+                v-model="formData.positionCode"
+                placeholder="请输入岗位编码（2-50字符）"
+              />
+            </el-form-item>
+            <el-form-item label="排序" prop="sort">
+              <el-input-number
+                v-model="formData.sort"
+                :min="0"
+                :max="999"
+                placeholder="请输入排序号"
+                class="sort-input"
+              />
+            </el-form-item>
+            <el-form-item label="状态" prop="status">
+              <el-radio-group v-model="formData.status" class="status-radio">
+                <el-radio :label="1" border>正常</el-radio>
+                <el-radio :label="0" border>禁用</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="备注" prop="remark" class="full-width-item">
+              <el-input
+                v-model="formData.remark"
+                type="textarea"
+                :rows="3"
+                placeholder="请输入备注信息（选填）"
+                maxlength="500"
+                show-word-limit
+              />
+            </el-form-item>
+          </div>
+        </el-form>
+      </div>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="dialogVisible = false" class="cancel-btn">取消</el-button>
@@ -854,25 +850,23 @@ onMounted(() => {
   background: #ffffff;
 }
 
-/* 表单行布局 */
-.form-row {
-  display: flex;
-  gap: 16px;
+.dialog-content-wrapper {
+  padding: 10px 0;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0 20px;
+}
+
+.full-width-item {
+  grid-column: 1 / -1;
+  margin-top: 4px;
+}
+
+.position-form :deep(.el-form-item) {
   margin-bottom: 20px;
-}
-
-.form-row:last-child {
-  margin-bottom: 0;
-}
-
-.form-col-half {
-  flex: 0 0 250px;
-  margin-bottom: 0 !important;
-}
-
-.form-col-full {
-  flex: 1;
-  margin-bottom: 0 !important;
 }
 
 .position-form :deep(.el-form-item__label) {
@@ -999,13 +993,9 @@ onMounted(() => {
     margin-bottom: 12px;
   }
 
-  .form-row {
-    flex-direction: column;
+  .form-grid {
+    grid-template-columns: 1fr;
     gap: 0;
-  }
-
-  .form-col-half {
-    margin-bottom: 20px !important;
   }
 }
 </style>

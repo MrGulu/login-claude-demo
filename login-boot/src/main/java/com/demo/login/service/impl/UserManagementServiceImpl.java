@@ -139,6 +139,16 @@ public class UserManagementServiceImpl implements IUserManagementService {
         }
         user.setPassword(PasswordUtil.encode(dto.getPassword()));
         userMapper.insert(user);
+
+        // 绑定岗位
+        if (dto.getPositionIds() != null && !dto.getPositionIds().isEmpty()) {
+            dto.getPositionIds().forEach(positionId -> {
+                UserPosition userPosition = new UserPosition();
+                userPosition.setUserId(user.getId());
+                userPosition.setPositionId(positionId);
+                userPositionMapper.insert(userPosition);
+            });
+        }
     }
 
     @Override
@@ -190,6 +200,22 @@ public class UserManagementServiceImpl implements IUserManagementService {
         }
 
         userMapper.updateById(user);
+
+        // 更新岗位关联
+        if (dto.getPositionIds() != null) {
+            // 清除旧关联
+            LambdaQueryWrapper<UserPosition> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(UserPosition::getUserId, id);
+            userPositionMapper.delete(wrapper);
+
+            // 插入新关联
+            dto.getPositionIds().forEach(positionId -> {
+                UserPosition userPosition = new UserPosition();
+                userPosition.setUserId(id);
+                userPosition.setPositionId(positionId);
+                userPositionMapper.insert(userPosition);
+            });
+        }
     }
 
     @Override
@@ -375,6 +401,28 @@ public class UserManagementServiceImpl implements IUserManagementService {
             if (dept != null) {
                 vo.setDeptName(dept.getDeptName());
             }
+        }
+
+        // 装填岗位信息
+        List<Long> positionIds = getUserPositions(user.getId());
+        vo.setPositionIds(positionIds);
+        if (!positionIds.isEmpty()) {
+            List<Position> positions = positionMapper.selectBatchIds(positionIds);
+            String positionNames = positions.stream()
+                    .map(Position::getPositionName)
+                    .collect(Collectors.joining(", "));
+            vo.setPositionNames(positionNames);
+        }
+
+        // 装填角色信息
+        List<Long> roleIds = getUserRoles(user.getId());
+        vo.setRoleIds(roleIds);
+        if (!roleIds.isEmpty()) {
+            List<Role> roles = roleMapper.selectBatchIds(roleIds);
+            String roleNames = roles.stream()
+                    .map(Role::getRoleName)
+                    .collect(Collectors.joining(", "));
+            vo.setRoleNames(roleNames);
         }
 
         return vo;

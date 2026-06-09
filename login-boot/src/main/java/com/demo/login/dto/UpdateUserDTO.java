@@ -54,4 +54,9 @@ public class UpdateUserDTO {
      * 部门ID
      */
     private Long deptId;
+
+    /**
+     * 岗位ID列表
+     */
+    private java.util.List<Long> positionIds;
 }
