@@ -81,7 +81,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="message" label="提示信息" min-width="150" show-overflow-tooltip />
-        <el-table-column prop="loginTime" label="登录时间" min-width="180" />
+        <el-table-column label="登录时间" min-width="180">
+          <template #default="{ row }">
+            <span class="time-cell">{{ formatLoginTime(row.loginTime) }}</span>
+          </template>
+        </el-table-column>
       </el-table>
 
       <!-- 分页器 -->
@@ -177,154 +181,154 @@ const handleCurrentChange = (val) => {
   getLogData()
 }
 
+// 格式化登录时间
+const formatLoginTime = (timeStr) => {
+  if (!timeStr) return ''
+  try {
+    const dateStr = timeStr.replace('T', ' ')
+    const dotIndex = dateStr.indexOf('.')
+    if (dotIndex !== -1) {
+      return dateStr.substring(0, dotIndex)
+    }
+    return dateStr
+  } catch (e) {
+    return timeStr
+  }
+}
+
 onMounted(() => {
   getLogData()
 })
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap');
+/* 导入优雅字体 */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
 
 .login-log-management {
   min-height: 100vh;
   padding: 24px 32px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-  animation: fadeIn 0.6s ease-out;
+  background: linear-gradient(135deg, #FAF5FF 0%, #F3E8FF 100%);
+  animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Fira Sans', sans-serif;
+  color: #4C1D95;
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .page-header {
-  margin-bottom: 20px;
-  animation: slideDown 0.8s ease-out;
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  margin-bottom: 24px;
 }
 
 .page-title {
-  font-family: 'Playfair Display', serif;
-  font-size: 32px;
+  font-family: 'Fira Code', monospace;
+  font-size: 28px;
   font-weight: 700;
-  color: #1a1a1a;
-  margin: 0 0 4px 0;
+  color: #4C1D95;
+  margin: 0 0 8px 0;
   letter-spacing: -0.5px;
-  background: linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 .page-subtitle {
-  font-family: 'Inter', sans-serif;
-  font-size: 13px;
-  font-weight: 400;
-  color: #6c757d;
+  font-size: 14px;
+  color: #7C3AED;
+  opacity: 0.8;
   margin: 0;
-  letter-spacing: 0.3px;
+}
+
+/* 搜索区域 */
+.search-section, .table-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(124, 58, 237, 0.05);
+  border: 1px solid rgba(124, 58, 237, 0.1);
+  margin-bottom: 16px;
+  transition: all 0.3s ease;
 }
 
 .search-section {
-  background: #ffffff;
-  border-radius: 12px;
   padding: 16px 24px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  animation: slideUp 0.8s ease-out 0.1s both;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .search-form {
   margin: 0;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .search-form :deep(.el-form-item) {
-  margin-bottom: 0 !important;
-  margin-right: 16px;
+  margin: 0 !important;
 }
 
 .search-input,
 .search-select {
-  width: 160px;
+  width: 180px;
 }
 
 .search-input :deep(.el-input__wrapper),
 .search-select :deep(.el-input__wrapper) {
-  border-radius: 10px;
-  box-shadow: 0 0 0 1px #e0e0e0 inset;
-  transition: all 0.3s ease;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px #E5E7EB inset;
+  transition: all 0.2s ease;
+  background: #F9FAFB;
 }
 
 .search-input :deep(.el-input__wrapper:hover),
 .search-select :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px #c0c0c0 inset;
+  box-shadow: 0 0 0 1px #C4B5FD inset;
+  background: #ffffff;
 }
 
 .search-input :deep(.el-input__wrapper.is-focus),
 .search-select :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 2px #dc2626 inset;
+  box-shadow: 0 0 0 2px #7C3AED inset;
+  background: #ffffff;
+}
+
+.el-button {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  border-radius: 8px;
+}
+.el-button:active {
+  transform: scale(0.96);
 }
 
 .search-btn {
-  border-radius: 10px;
-  padding: 12px 24px;
+  background: linear-gradient(135deg, #7C3AED 0%, #6D28D9 100%) !important;
+  border: none !important;
+  font-family: 'Fira Sans', sans-serif;
   font-weight: 500;
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-  border: none;
-  transition: all 0.3s ease;
+  color: white !important;
 }
 
 .search-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3) !important;
+  transform: translateY(-1px);
 }
 
 .reset-btn {
-  border-radius: 10px;
-  padding: 12px 24px;
-  font-weight: 500;
-  transition: all 0.3s ease;
+  border: 1px solid #D1D5DB;
+  color: #4B5563;
+  background: #ffffff;
 }
 
 .reset-btn:hover {
-  transform: translateY(-2px);
+  border-color: #7C3AED;
+  color: #7C3AED;
+  background: #F3E8FF;
+  transform: translateY(-1px);
 }
 
+/* 表格容器 */
 .table-container {
-  background: #ffffff;
-  border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  animation: slideUp 0.8s ease-out 0.2s both;
+  overflow: hidden;
 }
 
 .toolbar {
@@ -334,64 +338,92 @@ onMounted(() => {
 }
 
 .toolbar-info {
-  font-family: 'Inter', sans-serif;
   font-size: 14px;
-  color: #6c757d;
+  color: #6B7280;
 }
 
 .count {
+  font-family: 'Fira Code', monospace;
   font-weight: 600;
-  color: #dc2626;
-  font-size: 18px;
+  color: #7C3AED;
+  font-size: 16px;
   margin: 0 4px;
 }
 
+/* 表格样式 */
 .log-table {
-  font-family: 'Inter', sans-serif;
-}
-
-.log-table :deep(.table-header) {
-  background: #f8f9fa;
+  font-family: 'Fira Sans', sans-serif;
+  --el-table-border-color: #F3F4F6;
+  --el-table-header-bg-color: #F3E8FF;
+  --el-table-row-hover-bg-color: #FAF5FF;
 }
 
 .log-table :deep(.table-header th) {
+  font-family: 'Fira Code', monospace;
   font-weight: 600;
-  font-size: 13px;
-  color: #495057;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  padding: 12px 12px;
-  border-bottom: 2px solid #e9ecef;
+  color: #4C1D95;
+  background-color: var(--el-table-header-bg-color);
+  padding: 12px;
+  border-bottom: 2px solid #E9D5FF;
 }
 
 .log-table :deep(.table-row) {
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .log-table :deep(.table-row:hover) {
-  background: #f8f9fa;
-  transform: scale(1.002);
+  transform: translateX(2px);
 }
 
 .log-table :deep(.el-table__cell) {
-  padding: 12px 12px;
-  border-bottom: 1px solid #f1f3f5;
+  padding: 14px 12px;
+  border-bottom: 1px solid #F3F4F6;
 }
 
+/* 状态标签通透徽章化 */
 .status-tag {
-  font-weight: 500;
-  padding: 4px 12px;
   border-radius: 6px;
+  font-weight: 600;
+  font-size: 11px;
+  padding: 2px 8px;
+  border: 1px solid transparent;
+}
+.status-tag.el-tag--success {
+  background-color: #ECFDF5 !important;
+  color: #059669 !important;
+  border-color: #A7F3D0 !important;
+}
+.status-tag.el-tag--danger {
+  background-color: #FAF5FF !important;
+  color: #7C3AED !important;
+  border-color: #FCA5A5 !important;
 }
 
+/* 分页器 */
 .pagination-container {
+  margin-top: 20px;
   display: flex;
   justify-content: flex-end;
-  margin-top: 24px;
+}
+
+.custom-pagination :deep(.el-pager li) {
+  border-radius: 6px;
+  font-family: 'Fira Code', monospace;
+  transition: all 0.2s ease;
 }
 
 .custom-pagination :deep(.el-pager li.is-active) {
-  background-color: #dc2626 !important;
-  color: #ffffff !important;
+  background: #7C3AED;
+  color: white;
+}
+
+.custom-pagination :deep(.el-pager li:hover:not(.is-active)) {
+  color: #7C3AED;
+}
+
+.time-cell {
+  font-family: 'Fira Code', monospace;
+  font-size: 13px;
+  color: #4B5563;
 }
 </style>

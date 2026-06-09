@@ -91,4 +91,9 @@ public class User implements Serializable {
      * 备注
      */
     private String remark;
+
+    /**
+     * 部门ID
+     */
+    private Long deptId;
 }

@@ -79,6 +79,11 @@
           </template>
         </el-table-column>
         <el-table-column prop="nickname" label="昵称" min-width="140" />
+        <el-table-column prop="deptName" label="所属部门" min-width="140" show-overflow-tooltip>
+          <template #default="{ row }">
+            <span>{{ row.deptName || '无部门' }}</span>
+          </template>
+        </el-table-column>
         <el-table-column prop="email" label="邮箱" min-width="200" show-overflow-tooltip />
         <el-table-column prop="phone" label="手机号" min-width="140" />
         <el-table-column label="状态" width="100" align="center">
@@ -245,6 +250,19 @@
                 <el-radio :label="0" border>禁用</el-radio>
               </el-radio-group>
             </el-form-item>
+            <el-form-item label="所属部门" prop="deptId">
+              <el-tree-select
+                v-model="formData.deptId"
+                :data="deptOptions"
+                check-strictly
+                :render-after-expand="false"
+                placeholder="请选择所属部门"
+                value-key="id"
+                :props="{ label: 'deptName', value: 'id', children: 'children', disabled: 'disabled' }"
+                class="form-tree-select"
+                clearable
+              />
+            </el-form-item>
           </div>
           
           <el-form-item label="备注" prop="remark" class="full-width-item">
@@ -356,6 +374,7 @@ import { Plus, Search, User, UserFilled, Edit, Delete, Switch, Phone, InfoFilled
 import { getUserList as getUserListApi, createUser, updateUser, deleteUser as deleteUserApi, updateUserStatus as updateUserStatusApi, getUserRoles, assignRoles, getUserPositions, assignPositions } from '@/api/userManagement'
 import { getRoleList } from '@/api/role'
 import { getPositionList } from '@/api/position'
+import { getDepartmentList } from '@/api/dept'
 
 // 搜索表单
 const searchForm = reactive({
@@ -391,7 +410,8 @@ const formData = reactive({
   email: '',
   phone: '',
   status: 1,
-  remark: ''
+  remark: '',
+  deptId: null
 })
 
 // 表单验证规则
@@ -441,6 +461,39 @@ const positionDialogVisible = ref(false)
 const positionList = ref([])
 const selectedPositions = ref([])
 const positionSubmitting = ref(false)
+
+// 部门选项
+const deptOptions = ref([])
+
+// 扁平结构转树形结构（过滤已被停用的部门）
+const handleTreeForUser = (data) => {
+  const result = []
+  if (!Array.isArray(data)) return result
+  const map = {}
+  data.forEach(item => {
+    map[item.id] = { ...item, disabled: item.status === 0, children: [] }
+  })
+  data.forEach(item => {
+    const parent = map[item.parentId]
+    if (parent) {
+      parent.children.push(map[item.id])
+    } else {
+      result.push(map[item.id])
+    }
+  })
+  return result
+}
+
+const loadDeptOptions = async () => {
+  try {
+    const response = await getDepartmentList()
+    if (response.code === 200) {
+      deptOptions.value = handleTreeForUser(response.data)
+    }
+  } catch (error) {
+    console.error('加载部门树选项失败:', error)
+  }
+}
 
 // 权限检查函数
 const hasPermission = (permission) => {
@@ -527,6 +580,7 @@ const handleEdit = (row) => {
   formData.phone = row.phone
   formData.status = row.status
   formData.remark = row.remark
+  formData.deptId = row.deptId || null
   dialogVisible.value = true
 }
 
@@ -605,7 +659,8 @@ const handleSubmit = async () => {
       email: formData.email || undefined,
       phone: formData.phone || undefined,
       status: formData.status,
-      remark: formData.remark || undefined
+      remark: formData.remark || undefined,
+      deptId: formData.deptId || 0
     }
 
     // 如果是编辑模式
@@ -654,6 +709,7 @@ const handleDialogClose = () => {
   formData.phone = ''
   formData.status = 1
   formData.remark = ''
+  formData.deptId = null
 }
 
 // 分配角色
@@ -778,6 +834,7 @@ const handleDropdownCommand = (command, row) => {
 // 初始化
 onMounted(() => {
   getUserList()
+  loadDeptOptions()
 })
 </script>
 
@@ -1000,8 +1057,8 @@ onMounted(() => {
   color: #7C3AED;
 }
 .dropdown-item-custom.danger-item:hover {
-  background: #FEF2F2;
-  color: #DC2626;
+  background: #FAF5FF;
+  color: #7C3AED;
 }
 .dropdown-item-custom .item-icon {
   margin-right: 8px;
@@ -1238,8 +1295,8 @@ onMounted(() => {
   border-color: #A7F3D0 !important;
 }
 .status-tag.el-tag--danger {
-  background-color: #FEF2F2 !important;
-  color: #DC2626 !important;
+  background-color: #FAF5FF !important;
+  color: #7C3AED !important;
   border-color: #FCA5A5 !important;
 }
 

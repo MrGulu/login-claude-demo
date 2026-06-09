@@ -9,7 +9,13 @@ import com.demo.login.dto.CreateUserDTO;
 import com.demo.login.dto.UpdateUserDTO;
 import com.demo.login.dto.UserQueryDTO;
 import com.demo.login.entity.User;
+import com.demo.login.entity.Department;
 import com.demo.login.mapper.UserMapper;
+import com.demo.login.mapper.DepartmentMapper;
+import com.demo.login.mapper.UserRoleMapper;
+import com.demo.login.mapper.RoleMapper;
+import com.demo.login.mapper.UserPositionMapper;
+import com.demo.login.mapper.PositionMapper;
 import com.demo.login.service.impl.UserManagementServiceImpl;
 import com.demo.login.vo.PageResult;
 import com.demo.login.vo.UserVO;
@@ -39,6 +45,21 @@ class UserManagementServiceTest {
 
     @Mock
     private UserMapper userMapper;
+
+    @Mock
+    private UserRoleMapper userRoleMapper;
+
+    @Mock
+    private RoleMapper roleMapper;
+
+    @Mock
+    private UserPositionMapper userPositionMapper;
+
+    @Mock
+    private PositionMapper positionMapper;
+
+    @Mock
+    private DepartmentMapper departmentMapper;
 
     @InjectMocks
     private UserManagementServiceImpl userManagementService;
@@ -352,6 +373,46 @@ class UserManagementServiceTest {
 
         assertEquals("用户不存在", exception.getMessage());
         verify(userMapper, times(1)).selectById(999L);
+        verify(userMapper, never()).updateById(any(User.class));
+    }
+
+    @Test
+    void testCreateUser_InvalidDepartment() {
+        CreateUserDTO dto = new CreateUserDTO();
+        dto.setUsername("newuser");
+        dto.setPassword("123456");
+        dto.setStatus(1);
+        dto.setDeptId(999L);
+
+        when(userMapper.selectCount(any(LambdaQueryWrapper.class))).thenReturn(0L);
+        when(departmentMapper.selectById(999L)).thenReturn(null);
+
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
+            userManagementService.createUser(dto);
+        });
+
+        assertEquals("指定的部门不存在或已被禁用", exception.getMessage());
+        verify(userMapper, never()).insert(any(User.class));
+    }
+
+    @Test
+    void testUpdateUser_InvalidDepartment() {
+        UpdateUserDTO dto = new UpdateUserDTO();
+        dto.setStatus(1);
+        dto.setDeptId(999L);
+
+        Department disabledDept = new Department();
+        disabledDept.setId(999L);
+        disabledDept.setStatus(0); // 禁用状态
+
+        when(userMapper.selectById(1L)).thenReturn(testUser);
+        when(departmentMapper.selectById(999L)).thenReturn(disabledDept);
+
+        BusinessException exception = assertThrows(BusinessException.class, () -> {
+            userManagementService.updateUser(1L, dto);
+        });
+
+        assertEquals("指定的部门不存在或已被禁用", exception.getMessage());
         verify(userMapper, never()).updateById(any(User.class));
     }
 }

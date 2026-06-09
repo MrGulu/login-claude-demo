@@ -80,7 +80,7 @@ onUnmounted(() => {
   backdrop-filter: blur(20px);
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 20px 60px rgba(220, 38, 38, 0.15);
+  box-shadow: 0 20px 60px rgba(124, 58, 237, 0.15);
   padding: 40px;
   margin-bottom: 30px;
   overflow: hidden;
@@ -151,7 +151,7 @@ onUnmounted(() => {
 .circle-1 {
   width: 150px;
   height: 150px;
-  background: radial-gradient(circle, rgba(220, 38, 38, 0.3), transparent);
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent);
   top: -50px;
   right: -30px;
   animation-delay: 0s;
@@ -169,7 +169,7 @@ onUnmounted(() => {
 .circle-3 {
   width: 80px;
   height: 80px;
-  background: radial-gradient(circle, rgba(220, 38, 38, 0.2), transparent);
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.2), transparent);
   bottom: -20px;
   right: 100px;
   animation-delay: 10s;

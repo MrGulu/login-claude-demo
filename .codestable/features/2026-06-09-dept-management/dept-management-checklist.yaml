@@ -1,0 +1,57 @@
+feature: 2026-06-09-dept-management
+created: 2026-06-09
+
+steps:
+  - action: "数据库初始化：在 schema.sql 中编写 sys_department 建表、sys_user 新增字段与菜单权限 SQL 并在 SQLite 中执行"
+    exit_signal: "数据库 sys_department 表与 sys_user.dept_id 列存在，sys_menu 含有部门管理菜单记录"
+    status: done
+  - action: "后端部门 CRUD 接口实现：创建 Department 相关的 Entity、Mapper、Service 与 Controller，实现部门 CRUD 与状态切换"
+    exit_signal: "部门管理接口可通过 REST 客户端测通，单元测试正常运行并覆盖核心方法"
+    status: done
+  - action: "后端用户管理适配：在 User/UserVO 引入部门关联，修改用户保存逻辑（含部门合法性校验）和列表查询逻辑（联表查出部门名称）"
+    exit_signal: "修改后后端单元测试（如 UserManagementServiceTest）全部通过，且接口能正确带出部门名称"
+    status: done
+  - action: "前端部门管理页面开发：新建 api/dept.js 并在 views/system/ 新建 DeptManagement.vue 实现 CRUD 页面"
+    exit_signal: "能够正常访问 /system/departments 路由，完成部门的列表渲染与表单增删改查"
+    status: done
+  - action: "前端用户管理功能适配：修改 UserManagement.vue 页面展示所属部门，并能通过树下拉组件（el-tree-select）保存部门"
+    exit_signal: "用户列表显示所属部门，编辑用户时可以通过树下拉框分配部门并成功保存，整链路联通"
+    status: done
+
+checks:
+  - item: "sys_department 表结构包含 id, parent_id, dept_name, sort, status, remark 字段"
+    source: "名词契约"
+    status: passed
+  - item: "sys_user 表成功新增 dept_id 字段并可与 sys_department 外键关联"
+    source: "挂载点"
+    status: passed
+  - item: "菜单权限表中成功插入“部门管理”菜单，并分配权限 perms (system:dept:view, system:dept:query, system:dept:add, system:dept:edit, system:dept:delete)"
+    source: "挂载点"
+    status: passed
+  - item: "在保存或修改用户时，对传入的 deptId 进行有效性校验（若部门不存在或已禁用则抛出业务异常）"
+    source: "流程级约束"
+    status: passed
+  - item: "删除部门时，若存在子部门，拦截删除并提示“存在子部门，无法删除”"
+    source: "流程级约束"
+    status: passed
+  - item: "删除部门时，若有关联用户，拦截删除并提示“该部门下有绑定用户，无法删除”"
+    source: "流程级约束"
+    status: passed
+  - item: "编辑部门时防止循环引用：父部门不能选择自己或自己的子部门"
+    source: "流程级约束"
+    status: passed
+  - item: "前端 UserManagement.vue 编辑弹框中的部门下拉选择必须是单选"
+    source: "范围守护"
+    status: passed
+  - item: "系统内无针对部门的数据权限隔离逻辑代码"
+    source: "范围守护"
+    status: passed
+  - item: "验收场景 1：能够成功创建父子层级的部门树并以树形折叠显示在列表中"
+    source: "验收场景"
+    status: passed
+  - item: "验收场景 2：直接尝试删除带有子部门或关联用户的部门时，系统成功拦截并给与用户提示"
+    source: "验收场景"
+    status: passed
+  - item: "验收场景 3：可成功为用户分配部门，并在用户管理列表中显示正确的部门名称"
+    source: "验收场景"
+    status: passed

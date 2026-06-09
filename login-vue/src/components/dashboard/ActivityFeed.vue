@@ -84,7 +84,7 @@ const activities = ref([
     title: '用户登录',
     time: '5小时前',
     icon: CircleCheck,
-    iconBg: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+    iconBg: 'linear-gradient(135deg, #7C3AED, #5B21B6)',
     status: 'success',
     statusText: '成功'
   }
@@ -97,7 +97,7 @@ const activities = ref([
   backdrop-filter: blur(20px);
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 10px 40px rgba(220, 38, 38, 0.1);
+  box-shadow: 0 10px 40px rgba(124, 58, 237, 0.1);
   padding: 30px;
   animation: fadeInUp 0.6s ease 0.3s both;
 }
@@ -129,7 +129,7 @@ const activities = ref([
   padding: 16px;
   background: rgba(255, 255, 255, 0.5);
   border-radius: 12px;
-  border: 1px solid rgba(220, 38, 38, 0.05);
+  border: 1px solid rgba(124, 58, 237, 0.05);
   transition: all 0.3s ease;
   animation: slideInLeft 0.5s ease both;
 }
@@ -137,7 +137,7 @@ const activities = ref([
 .activity-item:hover {
   background: rgba(255, 255, 255, 0.8);
   transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.08);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.08);
 }
 
 .activity-icon {

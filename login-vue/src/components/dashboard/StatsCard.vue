@@ -35,7 +35,7 @@ const props = defineProps({
   },
   iconBg: {
     type: String,
-    default: 'linear-gradient(135deg, #dc2626, #f59e0b)'
+    default: 'linear-gradient(135deg, #7C3AED, #f59e0b)'
   },
   trend: {
     type: String,
@@ -129,7 +129,7 @@ onMounted(() => {
   backdrop-filter: blur(20px);
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 10px 40px rgba(220, 38, 38, 0.1);
+  box-shadow: 0 10px 40px rgba(124, 58, 237, 0.1);
   padding: 30px;
   display: flex;
   gap: 20px;
@@ -140,7 +140,7 @@ onMounted(() => {
 
 .stats-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 60px rgba(220, 38, 38, 0.2);
+  box-shadow: 0 20px 60px rgba(124, 58, 237, 0.2);
 }
 
 .card-icon {
@@ -186,7 +186,7 @@ onMounted(() => {
 }
 
 .trend-down {
-  color: #ef4444;
+  color: #9F67FF;
 }
 
 .trend-neutral {

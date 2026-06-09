@@ -18,7 +18,7 @@
         :collapse-transition="false"
         background-color="transparent"
         text-color="#333"
-        active-text-color="#dc2626"
+        active-text-color="#7C3AED"
       >
         <template v-for="menu in menuList" :key="menu.id">
           <!-- 目录（有子菜单） -->
@@ -153,7 +153,7 @@ onMounted(() => {
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9));
   backdrop-filter: blur(20px);
   border-right: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 4px 0 20px rgba(220, 38, 38, 0.08);
+  box-shadow: 4px 0 20px rgba(124, 58, 237, 0.08);
   display: flex;
   flex-direction: column;
   z-index: 200;
@@ -169,7 +169,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid rgba(220, 38, 38, 0.1);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.1);
   padding: 0 20px;
 }
 
@@ -223,7 +223,7 @@ onMounted(() => {
 }
 
 .sidebar-nav::-webkit-scrollbar-thumb {
-  background: rgba(220, 38, 38, 0.3);
+  background: rgba(124, 58, 237, 0.3);
   border-radius: 2px;
 }
 
@@ -238,11 +238,11 @@ onMounted(() => {
 }
 
 :deep(.el-menu-item:hover) {
-  background: rgba(220, 38, 38, 0.08) !important;
+  background: rgba(124, 58, 237, 0.08) !important;
 }
 
 :deep(.el-menu-item.is-active) {
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.15), rgba(245, 158, 11, 0.15)) !important;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(245, 158, 11, 0.15)) !important;
   color: var(--color-primary) !important;
 }
 
@@ -258,11 +258,11 @@ onMounted(() => {
 }
 
 :deep(.el-sub-menu__title:hover) {
-  background: rgba(220, 38, 38, 0.08) !important;
+  background: rgba(124, 58, 237, 0.08) !important;
 }
 
 :deep(.el-sub-menu.is-active .el-sub-menu__title) {
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.15), rgba(245, 158, 11, 0.15)) !important;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.15), rgba(245, 158, 11, 0.15)) !important;
   color: var(--color-primary) !important;
 }
 
@@ -274,19 +274,19 @@ onMounted(() => {
 
 .sidebar-footer {
   padding: 20px;
-  border-top: 1px solid rgba(220, 38, 38, 0.1);
+  border-top: 1px solid rgba(124, 58, 237, 0.1);
 }
 
 .logout-btn {
   width: 100%;
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(124, 58, 237, 0.1);
   border: none;
   color: var(--color-primary);
   font-weight: 500;
 }
 
 .logout-btn:hover {
-  background: rgba(220, 38, 38, 0.2);
+  background: rgba(124, 58, 237, 0.2);
 }
 
 .sidebar.collapsed .logout-btn {

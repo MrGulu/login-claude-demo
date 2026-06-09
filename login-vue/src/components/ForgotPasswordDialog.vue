@@ -408,7 +408,7 @@ onUnmounted(() => {
   border-radius: 32px;
   padding: 3rem;
   box-shadow:
-    0 60px 140px rgba(220, 38, 38, 0.4),
+    0 60px 140px rgba(124, 58, 237, 0.4),
     0 0 0 1px rgba(255, 255, 255, 1),
     inset 0 1px 0 rgba(255, 255, 255, 0.8);
   animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -444,7 +444,7 @@ onUnmounted(() => {
   width: 40px;
   height: 40px;
   border: none;
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(124, 58, 237, 0.1);
   border-radius: 12px;
   color: var(--color-primary);
   cursor: pointer;
@@ -481,7 +481,7 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: 0 20px 40px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 20px 40px rgba(124, 58, 237, 0.3);
   animation: iconPulse 2s ease-in-out infinite;
 }
 
@@ -547,7 +547,7 @@ onUnmounted(() => {
   width: 40px;
   height: 40px;
   border-radius: 12px;
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba(124, 58, 237, 0.1);
   color: var(--color-text-muted);
   display: flex;
   align-items: center;
@@ -560,7 +560,7 @@ onUnmounted(() => {
 .step-item.active .step-number {
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
   color: white;
-  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
   transform: scale(1.1);
 }
 
@@ -658,7 +658,7 @@ onUnmounted(() => {
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.3);
   margin-top: 1.5rem;
   position: relative;
   overflow: hidden;
@@ -681,7 +681,7 @@ onUnmounted(() => {
 
 .primary-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(220, 38, 38, 0.4);
+  box-shadow: 0 12px 32px rgba(124, 58, 237, 0.4);
 }
 
 .primary-btn:disabled {
@@ -763,7 +763,7 @@ onUnmounted(() => {
 
 :deep(.el-input__wrapper.is-focus) {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.15) !important;
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.15) !important;
 }
 
 /* 过渡动画 */

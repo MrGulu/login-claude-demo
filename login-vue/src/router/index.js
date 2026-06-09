@@ -5,6 +5,7 @@ import ProfileView from '../views/ProfileView.vue'
 import UserManagement from '../views/system/UserManagement.vue'
 import RoleManagement from '../views/system/RoleManagement.vue'
 import PositionManagement from '../views/system/PositionManagement.vue'
+import DeptManagement from '../views/system/DeptManagement.vue'
 import NoticeManagement from '../views/system/NoticeManagement.vue'
 import LoginLogManagement from '../views/system/LoginLogManagement.vue'
 import DashboardLayout from '../layouts/DashboardLayout.vue'
@@ -52,6 +53,12 @@ const routes = [
         path: '/system/positions',
         name: 'PositionManagement',
         component: PositionManagement,
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/system/departments',
+        name: 'DeptManagement',
+        component: DeptManagement,
         meta: { requiresAuth: true }
       },
       {

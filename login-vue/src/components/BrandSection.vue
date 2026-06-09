@@ -66,7 +66,7 @@
   flex-direction: column;
   justify-content: space-between;
   box-shadow:
-    0 30px 90px rgba(220, 38, 38, 0.2),
+    0 30px 90px rgba(124, 58, 237, 0.2),
     inset 0 0 0 1px rgba(255, 255, 255, 0.9);
   clip-path: polygon(0 0, 100% 0, 85% 100%, 0 100%);
   animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1);
@@ -95,7 +95,7 @@
   font-size: 2rem;
   font-weight: 700;
   color: white;
-  box-shadow: 0 10px 30px rgba(220, 38, 38, 0.4);
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
   position: relative;
 }
 

@@ -143,9 +143,9 @@ const showForgotPassword = () => {
   border-radius: 32px;
   padding: 3rem 2.5rem;
   box-shadow:
-    0 40px 100px rgba(220, 38, 38, 0.25),
+    0 40px 100px rgba(124, 58, 237, 0.25),
     inset 0 0 0 1px rgba(255, 255, 255, 1),
-    0 0 0 1px rgba(220, 38, 38, 0.1);
+    0 0 0 1px rgba(124, 58, 237, 0.1);
   animation: slideInRight 1s cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 20;
 }
@@ -245,7 +245,7 @@ const showForgotPassword = () => {
   content: '';
   flex: 1;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.2), transparent);
 }
 
 @media (max-width: 1200px) {

@@ -9,7 +9,7 @@
         label="总用户数"
         :value="15234"
         :icon="UserFilled"
-        iconBg="linear-gradient(135deg, #dc2626, #b91c1c)"
+        iconBg="linear-gradient(135deg, #7C3AED, #5B21B6)"
         trend="+12%"
         trendType="up"
         :delay="0"
@@ -184,12 +184,12 @@ const initCharts = (trendData, browserData) => {
         data: trendData.counts,
         type: 'line',
         smooth: true,
-        lineStyle: { color: '#dc2626', width: 3.5 },
-        itemStyle: { color: '#dc2626' },
+        lineStyle: { color: '#7C3AED', width: 3.5 },
+        itemStyle: { color: '#7C3AED' },
         areaStyle: {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-            { offset: 0, color: 'rgba(220, 38, 38, 0.25)' },
-            { offset: 1, color: 'rgba(220, 38, 38, 0.001)' }
+            { offset: 0, color: 'rgba(124, 58, 237, 0.25)' },
+            { offset: 1, color: 'rgba(124, 58, 237, 0.001)' }
           ])
         }
       }]
@@ -243,7 +243,7 @@ const initCharts = (trendData, browserData) => {
         },
         labelLine: { show: false },
         data: browserData,
-        color: ['#dc2626', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#6b7280']
+        color: ['#7C3AED', '#f59e0b', '#10b981', '#3b82f6', '#8b5cf6', '#ec4899', '#6b7280']
       }]
     })
   }
@@ -357,14 +357,14 @@ onUnmounted(() => {
 
 :deep(.premium-notice-dialog .el-dialog__header) {
   padding: 24px 28px 12px;
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.08) 0%, rgba(245, 158, 11, 0.08) 100%);
-  border-bottom: 1px solid rgba(220, 38, 38, 0.08);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.08) 0%, rgba(245, 158, 11, 0.08) 100%);
+  border-bottom: 1px solid rgba(124, 58, 237, 0.08);
 }
 
 :deep(.premium-notice-dialog .el-dialog__title) {
   font-size: 20px;
   font-weight: 700;
-  color: #b91c1c;
+  color: #5B21B6;
   font-family: 'Playfair Display', serif;
 }
 
@@ -402,7 +402,7 @@ onUnmounted(() => {
 }
 
 .notice-body::-webkit-scrollbar-thumb {
-  background: rgba(220, 38, 38, 0.2);
+  background: rgba(124, 58, 237, 0.2);
   border-radius: 2px;
 }
 
@@ -417,15 +417,15 @@ onUnmounted(() => {
   padding: 12px 36px;
   font-size: 15px;
   font-weight: 600;
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  background: linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%);
   border: none;
-  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.25);
+  box-shadow: 0 4px 14px rgba(124, 58, 237, 0.25);
   transition: all 0.3s ease;
 }
 
 .read-confirm-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.35);
+  box-shadow: 0 6px 18px rgba(124, 58, 237, 0.35);
 }
 
 @media (max-width: 1200px) {

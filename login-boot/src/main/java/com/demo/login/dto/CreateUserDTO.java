@@ -57,4 +57,9 @@ public class CreateUserDTO {
      */
     @Size(max = 500, message = "备注长度不能超过500个字符")
     private String remark;
+
+    /**
+     * 部门ID
+     */
+    private Long deptId;
 }

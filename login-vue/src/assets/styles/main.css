@@ -1,16 +1,16 @@
 :root {
-  --color-primary: #dc2626;
-  --color-primary-light: #ef4444;
-  --color-primary-dark: #b91c1c;
+  --color-primary: #7C3AED;
+  --color-primary-light: #9F67FF;
+  --color-primary-dark: #5B21B6;
   --color-accent: #f59e0b;
-  --color-bg-start: #fef2f2;
-  --color-bg-end: #fff7ed;
+  --color-bg-start: #FAF5FF;
+  --color-bg-end: #F3E8FF;
   --color-glass: rgba(255, 255, 255, 0.7);
   --color-glass-border: rgba(255, 255, 255, 0.8);
-  --color-text: #7f1d1d;
-  --color-text-light: #991b1b;
+  --color-text: #4C1D95;
+  --color-text-light: #6D28D9;
   --color-text-muted: #78716c;
-  --color-shadow: rgba(220, 38, 38, 0.2);
+  --color-shadow: rgba(124, 58, 237, 0.15);
   --font-display: 'Lexend', sans-serif;
   --font-body: 'Nunito Sans', sans-serif;
 }

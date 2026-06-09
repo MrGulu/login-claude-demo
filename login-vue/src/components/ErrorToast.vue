@@ -72,13 +72,13 @@ const close = () => {
   right: 2rem;
   width: 420px;
   background: linear-gradient(135deg,
-    rgba(220, 38, 38, 0.95) 0%,
-    rgba(185, 28, 28, 0.95) 100%);
+    rgba(124, 58, 237, 0.95) 0%,
+    rgba(91, 33, 182, 0.95) 100%);
   backdrop-filter: blur(40px) saturate(180%);
   border-radius: 20px;
   padding: 1.5rem;
   box-shadow:
-    0 20px 60px rgba(220, 38, 38, 0.4),
+    0 20px 60px rgba(124, 58, 237, 0.4),
     0 0 0 1px rgba(255, 255, 255, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
   z-index: 9999;

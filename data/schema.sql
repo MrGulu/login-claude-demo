@@ -16,13 +16,15 @@ CREATE TABLE IF NOT EXISTS sys_user (
     update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
     create_by VARCHAR(50),
     update_by VARCHAR(50),
-    remark VARCHAR(500)
+    remark VARCHAR(500),
+    dept_id INTEGER DEFAULT NULL
 );
 
 -- 创建索引
 CREATE INDEX IF NOT EXISTS idx_username ON sys_user(username);
 CREATE INDEX IF NOT EXISTS idx_status ON sys_user(status);
 CREATE INDEX IF NOT EXISTS idx_deleted ON sys_user(deleted);
+CREATE INDEX IF NOT EXISTS idx_dept_id ON sys_user(dept_id);
 
 -- 登录日志表
 CREATE TABLE IF NOT EXISTS sys_login_log (
@@ -144,6 +146,25 @@ CREATE TABLE IF NOT EXISTS sys_position (
 CREATE INDEX IF NOT EXISTS idx_position_code ON sys_position(position_code);
 CREATE INDEX IF NOT EXISTS idx_position_status ON sys_position(status);
 
+-- 部门表
+CREATE TABLE IF NOT EXISTS sys_department (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    parent_id INTEGER DEFAULT 0,
+    dept_name VARCHAR(50) NOT NULL,
+    sort INTEGER DEFAULT 0,
+    status INTEGER DEFAULT 1,
+    deleted INTEGER DEFAULT 0,
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    create_by VARCHAR(50),
+    update_by VARCHAR(50),
+    remark VARCHAR(500)
+);
+
+CREATE INDEX IF NOT EXISTS idx_dept_parent_id ON sys_department(parent_id);
+CREATE INDEX IF NOT EXISTS idx_dept_status ON sys_department(status);
+CREATE INDEX IF NOT EXISTS idx_dept_deleted ON sys_department(deleted);
+
 -- 用户-岗位关联表
 CREATE TABLE IF NOT EXISTS sys_user_position (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -156,15 +177,23 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_user_position ON sys_user_position(user_id
 CREATE INDEX IF NOT EXISTS idx_up_user_id ON sys_user_position(user_id);
 CREATE INDEX IF NOT EXISTS idx_up_position_id ON sys_user_position(position_id);
 
+-- 插入部门初始测试数据
+INSERT OR IGNORE INTO sys_department (id, parent_id, dept_name, sort, status, remark) VALUES
+(1, 0, '总公司', 1, 1, '集团总公司'),
+(2, 1, '研发部门', 1, 1, '研发中心'),
+(3, 1, '市场部门', 2, 1, '市场中心'),
+(4, 2, '前端组', 1, 1, '前端开发小组'),
+(5, 2, '后端组', 2, 1, '后端开发小组');
+
 -- 插入测试数据（密码为 123456 的 BCrypt 加密）
-INSERT OR IGNORE INTO sys_user (username, password, nickname, avatar, email, phone, status, deleted, remark)
+INSERT OR IGNORE INTO sys_user (username, password, nickname, avatar, email, phone, status, deleted, remark, dept_id)
 VALUES
 ('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '管理员',
  'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
- 'admin@example.com', '13800138000', 1, 0, '系统管理员'),
+ 'admin@example.com', '13800138000', 1, 0, '系统管理员', 1),
 ('user', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVKIUi', '普通用户',
  'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png',
- 'user@example.com', '13800138001', 1, 0, '普通用户');
+ 'user@example.com', '13800138001', 1, 0, '普通用户', 4);
 
 -- 插入菜单数据
 INSERT OR IGNORE INTO sys_menu (id, parent_id, menu_name, menu_type, path, component, icon, sort, perms) VALUES
@@ -231,7 +260,7 @@ CREATE TABLE IF NOT EXISTS sys_notice (
 
 -- 2. 插入菜单与按钮权限数据
 INSERT OR IGNORE INTO sys_menu (id, parent_id, menu_name, menu_type, path, component, icon, sort, perms)
-VALUES (23, 3, '公告管理', 'C', '/system/notices', 'system/NoticeManagement', 'Notification', 4, 'system:notice:view');
+VALUES (23, 3, '公告管理', 'C', '/system/notices', 'system/NoticeManagement', 'Notification', 5, 'system:notice:view');
 
 INSERT OR IGNORE INTO sys_menu (id, parent_id, menu_name, menu_type, icon, sort, perms)
 VALUES 
@@ -262,7 +291,7 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_user_notice_read ON sys_notice_read(user_i
 
 -- 2. 插入登录日志菜单与查询按钮
 INSERT OR IGNORE INTO sys_menu (id, parent_id, menu_name, menu_type, path, component, icon, sort, perms)
-VALUES (28, 3, '登录日志', 'C', '/system/login-logs', 'system/LoginLogManagement', 'Document', 5, 'system:login-log:view');
+VALUES (28, 3, '登录日志', 'C', '/system/login-logs', 'system/LoginLogManagement', 'Document', 6, 'system:login-log:view');
 
 INSERT OR IGNORE INTO sys_menu (id, parent_id, menu_name, menu_type, icon, sort, perms)
 VALUES (29, 28, '查询日志', 'F', NULL, 1, 'system:login-log:query');
@@ -270,5 +299,27 @@ VALUES (29, 28, '查询日志', 'F', NULL, 1, 'system:login-log:query');
 -- 3. 将登录日志权限分配给 root 角色
 INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 28);
 INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 29);
+
+-- ==========================================
+-- 部门管理菜单与权限初始化
+-- ==========================================
+
+-- 1. 插入菜单与按钮权限数据
+INSERT OR IGNORE INTO sys_menu (id, parent_id, menu_name, menu_type, path, component, icon, sort, perms)
+VALUES (30, 3, '部门管理', 'C', '/system/departments', 'system/DeptManagement', 'Connection', 4, 'system:dept:view');
+
+INSERT OR IGNORE INTO sys_menu (id, parent_id, menu_name, menu_type, icon, sort, perms)
+VALUES
+(31, 30, '查询部门', 'F', NULL, 1, 'system:dept:query'),
+(32, 30, '新增部门', 'F', NULL, 2, 'system:dept:add'),
+(33, 30, '编辑部门', 'F', NULL, 3, 'system:dept:edit'),
+(34, 30, '删除部门', 'F', NULL, 4, 'system:dept:delete');
+
+-- 2. 将部门管理权限分配给 root 角色
+INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 30);
+INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 31);
+INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 32);
+INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 33);
+INSERT OR IGNORE INTO sys_role_menu (role_id, menu_id) VALUES (1, 34);
 
 

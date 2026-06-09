@@ -146,7 +146,7 @@ import { useUserInfo } from '../composables/useUserInfo'
 const { updateUserInfo } = useUserInfo()
 
 // 默认头像
-const defaultAvatar = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0iI2RjMjYyNiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LXNpemU9IjQwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSI+VTwvdGV4dD48L3N2Zz4='
+const defaultAvatar = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJz48cmVjdCB3aWR0aD0nMTAwJyBoZWlnaHQ9JzEwMCcgZmlsbD0nIzdDM0FFRCcvPjx0ZXh0IHg9JzUwJScgeT0nNTAlJyBmb250LXNpemU9JzQwJyBmaWxsPSd3aGl0ZScgdGV4dC1hbmNob3I9J21pZGRsZScgZG9taW5hbnQtYmFzZWxpbmU9J21pZGRsZSc+VTwvdGV4dD48L3N2Zz4='
 
 // 表单引用
 const profileFormRef = ref(null)
@@ -408,20 +408,20 @@ onMounted(() => {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.85));
   backdrop-filter: blur(20px);
   border-radius: 24px;
-  border: 1px solid rgba(220, 38, 38, 0.1);
-  box-shadow: 0 8px 32px rgba(220, 38, 38, 0.08);
+  border: 1px solid rgba(124, 58, 237, 0.1);
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.08);
   overflow: hidden;
   transition: all 0.3s ease;
 }
 
 .profile-card:hover {
-  box-shadow: 0 12px 48px rgba(220, 38, 38, 0.12);
+  box-shadow: 0 12px 48px rgba(124, 58, 237, 0.12);
   transform: translateY(-2px);
 }
 .card-header {
   padding: 24px 32px;
-  border-bottom: 1px solid rgba(220, 38, 38, 0.1);
-  background: linear-gradient(135deg, rgba(220, 38, 38, 0.03), rgba(245, 158, 11, 0.03));
+  border-bottom: 1px solid rgba(124, 58, 237, 0.1);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.03), rgba(245, 158, 11, 0.03));
 }
 .card-title {
   font-size: 20px;
@@ -453,14 +453,14 @@ onMounted(() => {
   height: 160px;
   border-radius: 50%;
   overflow: hidden;
-  border: 4px solid rgba(220, 38, 38, 0.1);
-  box-shadow: 0 8px 24px rgba(220, 38, 0.15);
+  border: 4px solid rgba(124, 58, 237, 0.1);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, 0.15);
   transition: all 0.3s ease;
 }
 
 .avatar-wrapper:hover {
-  border-color: rgba(220, 38, 38, 0.3);
-  box-shadow: 0 12px 32px rgba(220, 38, 38, 0.25);
+  border-color: rgba(124, 58, 237, 0.3);
+  box-shadow: 0 12px 32px rgba(124, 58, 237, 0.25);
 }
 
 .avatar-wrapper:hover .avatar-overlay {
@@ -493,7 +493,7 @@ onMounted(() => {
 
 .upload-btn {
   width: 100%;
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  background: linear-gradient(135deg, #7C3AED, #5B21B6);
   border: none;
   border-radius: 12px;
   height: 40px;
@@ -501,7 +501,7 @@ onMounted(() => {
 }
 
 .upload-btn:hover {
-  background: linear-gradient(135deg, #b91c1c, #991b1b);
+  background: linear-gradient(135deg, #5B21B6, #6D28D9);
 }
 
 .avatar-tip {
@@ -536,8 +536,8 @@ onMounted(() => {
 }
 
 .captcha-image:hover {
-  border-color: #dc2626;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.2);
+  border-color: #7C3AED;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.2);
 }
 
 :deep(.el-form-item__label) {
@@ -552,15 +552,15 @@ onMounted(() => {
 }
 
 :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.08);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.08);
 }
 
 :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 4px 16px rgba(220, 38, 38, 0.15);
+  box-shadow: 0 4px 16px rgba(124, 58, 237, 0.15);
 }
 
 :deep(.el-button--primary) {
-  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  background: linear-gradient(135deg, #7C3AED, #5B21B6);
   border: none;
   border-radius: 12px;
   padding: 12px 32px;
@@ -569,9 +569,9 @@ onMounted(() => {
 }
 
 :deep(.el-button--primary:hover) {
-  background: linear-gradient(135deg, #b91c1c, #991b1b);
+  background: linear-gradient(135deg, #5B21B6, #6D28D9);
   transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(220, 38, 38, 0.3);
+  box-shadow: 0 8px 16px rgba(124, 58, 237, 0.3);
 }
 
 @media (max-width: 768px) {

@@ -35,7 +35,7 @@ const handleSocialLogin = (provider) => {
 .social-btn {
   padding: 1rem !important;
   background: rgba(255, 255, 255, 0.8) !important;
-  border: 2px solid rgba(220, 38, 38, 0.2) !important;
+  border: 2px solid rgba(124, 58, 237, 0.2) !important;
   border-radius: 16px !important;
   color: var(--color-text) !important;
   font-family: var(--font-body) !important;
@@ -54,7 +54,7 @@ const handleSocialLogin = (provider) => {
   background: white !important;
   border-color: var(--color-primary) !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 10px 25px rgba(220, 38, 38, 0.2) !important;
+  box-shadow: 0 10px 25px rgba(124, 58, 237, 0.2) !important;
 }
 
 .social-btn svg {

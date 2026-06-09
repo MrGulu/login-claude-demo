@@ -18,6 +18,8 @@ import com.demo.login.mapper.RoleMapper;
 import com.demo.login.mapper.UserMapper;
 import com.demo.login.mapper.UserPositionMapper;
 import com.demo.login.mapper.UserRoleMapper;
+import com.demo.login.entity.Department;
+import com.demo.login.mapper.DepartmentMapper;
 import com.demo.login.service.IUserManagementService;
 import com.demo.login.vo.PageResult;
 import com.demo.login.vo.UserVO;
@@ -55,6 +57,9 @@ public class UserManagementServiceImpl implements IUserManagementService {
 
     @Autowired
     private PositionMapper positionMapper;
+
+    @Autowired
+    private DepartmentMapper departmentMapper;
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -118,9 +123,20 @@ public class UserManagementServiceImpl implements IUserManagementService {
             }
         }
 
+        // 校验部门合法性
+        if (dto.getDeptId() != null && dto.getDeptId() != 0) {
+            Department dept = departmentMapper.selectById(dto.getDeptId());
+            if (dept == null || dept.getStatus() != 1) {
+                throw new BusinessException("指定的部门不存在或已被禁用");
+            }
+        }
+
         // 创建用户
         User user = new User();
         BeanUtils.copyProperties(dto, user);
+        if (user.getDeptId() != null && user.getDeptId() == 0) {
+            user.setDeptId(null);
+        }
         user.setPassword(PasswordUtil.encode(dto.getPassword()));
         userMapper.insert(user);
     }
@@ -154,8 +170,19 @@ public class UserManagementServiceImpl implements IUserManagementService {
             }
         }
 
+        // 校验部门合法性
+        if (dto.getDeptId() != null && dto.getDeptId() != 0) {
+            Department dept = departmentMapper.selectById(dto.getDeptId());
+            if (dept == null || dept.getStatus() != 1) {
+                throw new BusinessException("指定的部门不存在或已被禁用");
+            }
+        }
+
         // 更新用户信息
         BeanUtils.copyProperties(dto, user);
+        if (user.getDeptId() != null && user.getDeptId() == 0) {
+            user.setDeptId(null);
+        }
 
         // 如果密码不为空，则加密后更新
         if (StrUtil.isNotBlank(dto.getPassword())) {
@@ -340,6 +367,14 @@ public class UserManagementServiceImpl implements IUserManagementService {
         }
         if (user.getUpdateTime() != null) {
             vo.setUpdateTime(user.getUpdateTime().format(DATE_TIME_FORMATTER));
+        }
+
+        // 装填部门名称
+        if (user.getDeptId() != null && user.getDeptId() != 0) {
+            Department dept = departmentMapper.selectById(user.getDeptId());
+            if (dept != null) {
+                vo.setDeptName(dept.getDeptName());
+            }
         }
 
         return vo;

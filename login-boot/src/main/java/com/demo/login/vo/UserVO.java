@@ -55,4 +55,14 @@ public class UserVO {
      * 备注
      */
     private String remark;
+
+    /**
+     * 部门ID
+     */
+    private Long deptId;
+
+    /**
+     * 部门名称
+     */
+    private String deptName;
 }

@@ -38,7 +38,7 @@ const actions = ref([
     title: '添加用户',
     description: '创建新的用户账户',
     icon: UserFilled,
-    iconBg: 'linear-gradient(135deg, #dc2626, #b91c1c)',
+    iconBg: 'linear-gradient(135deg, #7C3AED, #5B21B6)',
     action: 'add-user'
   },
   {
@@ -75,7 +75,7 @@ const handleAction = (action) => {
   backdrop-filter: blur(20px);
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 10px 40px rgba(220, 38, 38, 0.1);
+  box-shadow: 0 10px 40px rgba(124, 58, 237, 0.1);
   padding: 30px;
   animation: fadeInUp 0.6s ease 0.4s both;
 }
@@ -100,7 +100,7 @@ const handleAction = (action) => {
 .action-card {
   background: rgba(255, 255, 255, 0.6);
   border-radius: 16px;
-  border: 1px solid rgba(220, 38, 38, 0.05);
+  border: 1px solid rgba(124, 58, 237, 0.05);
   padding: 24px;
   text-align: center;
   cursor: pointer;
@@ -111,7 +111,7 @@ const handleAction = (action) => {
 .action-card:hover {
   background: rgba(255, 255, 255, 0.9);
   transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 12px 30px rgba(220, 38, 38, 0.15);
+  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.15);
 }
 
 .action-icon {

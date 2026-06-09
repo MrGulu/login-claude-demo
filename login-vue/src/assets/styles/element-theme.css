@@ -1,20 +1,20 @@
-/* Element Plus Theme Customization - Restricted to Login View to avoid global pollution */
-.login-view {
-  --el-color-primary: #dc2626;
-  --el-color-primary-light-3: #ef4444;
-  --el-color-primary-light-5: #f87171;
-  --el-color-primary-light-7: #fca5a5;
-  --el-color-primary-light-8: #fecaca;
-  --el-color-primary-light-9: #fee2e2;
-  --el-color-primary-dark-2: #b91c1c;
+/* Element Plus Theme Customization - Global elegant purple and gold theme */
+:root {
+  --el-color-primary: #7C3AED !important;
+  --el-color-primary-light-3: #9F67FF !important;
+  --el-color-primary-light-5: #b78cfc !important;
+  --el-color-primary-light-7: #d3bbfd !important;
+  --el-color-primary-light-8: #e8dbfc !important;
+  --el-color-primary-light-9: #f5f0ff !important;
+  --el-color-primary-dark-2: #5B21B6 !important;
   --el-border-radius-base: 16px;
   --el-border-radius-small: 12px;
 }
 
-/* Override Element Plus default styles inside Login View */
+/* Override Element Plus default styles inside Login View with elegant purple and gold */
 .login-view .el-input__wrapper {
   background: rgba(255, 255, 255, 0.8) !important;
-  border: 2px solid rgba(220, 38, 38, 0.2) !important;
+  border: 2px solid rgba(124, 58, 237, 0.2) !important;
   border-radius: 16px !important;
   box-shadow: none !important;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
@@ -22,13 +22,13 @@
 }
 
 .login-view .el-input__wrapper:hover {
-  border-color: rgba(220, 38, 38, 0.3) !important;
+  border-color: rgba(124, 58, 237, 0.3) !important;
 }
 
 .login-view .el-input__wrapper.is-focus {
   background: white !important;
   border-color: var(--color-primary) !important;
-  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1), 0 10px 30px rgba(220, 38, 38, 0.15) !important;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1), 0 10px 30px rgba(124, 58, 237, 0.15) !important;
   transform: translateY(-2px);
 }
 
@@ -60,7 +60,7 @@
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%) !important;
   border: none !important;
   border-radius: 16px !important;
-  box-shadow: 0 10px 30px rgba(220, 38, 38, 0.3) !important;
+  box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3) !important;
   font-family: var(--font-body) !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
@@ -70,7 +70,7 @@
 
 .login-view .el-button--primary:hover {
   transform: translateY(-3px) !important;
-  box-shadow: 0 15px 40px rgba(220, 38, 38, 0.4) !important;
+  box-shadow: 0 15px 40px rgba(124, 58, 237, 0.4) !important;
 }
 
 .login-view .el-button--primary:active {

@@ -53,7 +53,7 @@ import LoginForm from '../components/LoginForm.vue'
 /* Decorative Lines */
 .deco-line {
   position: absolute;
-  background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(124, 58, 237, 0.2), transparent);
   height: 2px;
   animation: lineMove 3s ease-in-out infinite;
 }

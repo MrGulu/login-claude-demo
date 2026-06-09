@@ -54,7 +54,7 @@ onUnmounted(() => {
 .orb-1 {
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, rgba(220, 38, 38, 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(124, 58, 237, 0.4) 0%, transparent 70%);
   top: -10%;
   left: -10%;
   animation-delay: 0s;
@@ -72,7 +72,7 @@ onUnmounted(() => {
 .orb-3 {
   width: 400px;
   height: 400px;
-  background: radial-gradient(circle, rgba(239, 68, 68, 0.35) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(159, 103, 255, 0.35) 0%, transparent 70%);
   top: 40%;
   left: 50%;
   animation-delay: 15s;
@@ -85,8 +85,8 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   background-image:
-    linear-gradient(rgba(220, 38, 38, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(220, 38, 38, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(124, 58, 237, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(124, 58, 237, 0.03) 1px, transparent 1px);
   background-size: 50px 50px;
   animation: gridMove 20s linear infinite;
 }
